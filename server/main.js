@@ -2,8 +2,11 @@
 
 const http = require("node:http");
 const fs = require("node:fs");
-const index = require("./index.js");
+const users = require("./routes/users.js");
 const mongoose = require("mongoose");
+require('dotenv').config();
+
+
 
 mongoose
   .connect(process.env.MONGO)
@@ -12,8 +15,8 @@ mongoose
 
 
 const routing = {
-  "/": async () => {
-    return index();
+  "/api/user": async () => {
+    return users();
   },
 };
 
