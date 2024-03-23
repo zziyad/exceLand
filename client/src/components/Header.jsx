@@ -9,11 +9,16 @@ export default function Header() {
     <Navbar className="border-b-2">
       <Link
         to="/"
-        className="self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white"
+        className="self-center whitespace-nowrap relative text-sm sm:text-xl font-semibold dark:text-white"
       >
+        {/*
         <span className="px-2 py-1 bg-gradient-to-r from-green-500 via-green-500 to-white-500 rounded-lg text-white">
           ExceLand
         </span>
+       */ }
+
+        
+          <img className="h-12"  src="./Exl.png" alt="logo" />
       </Link>
 
       <div className="flex gap-2 md:order-2">
@@ -28,6 +33,10 @@ export default function Header() {
         <Navbar.Link active={path === '/'} as={"div"}>
           <Link to="/">Home</Link>
         </Navbar.Link>
+        <Navbar.Link active={path === '/about'}as={"div"}>
+          <Link to="/about">About</Link>
+        </Navbar.Link>
+
         <Navbar.Link active={path === '/about'}as={"div"}>
           <Link to="/about">About</Link>
         </Navbar.Link>
