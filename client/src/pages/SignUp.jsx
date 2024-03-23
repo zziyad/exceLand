@@ -18,6 +18,7 @@ export default function SignUp() {
             This is a demo project. You can sign up with your email and password
             or with Google.
           </p>
+          <span></span>
         </div>
 
         {/* left*/}
