@@ -1,7 +1,6 @@
-import { Button, Navbar } from "flowbite-react";
-import { Link, useLocation } from "react-router-dom";
-import { FaMoon } from "react-icons/fa";
-
+import { Button, Navbar } from 'flowbite-react';
+import { Link, useLocation } from 'react-router-dom';
+import { FaMoon } from 'react-icons/fa';
 
 export default function Header() {
   const path = useLocation().pathname;
@@ -11,14 +10,7 @@ export default function Header() {
         to="/"
         className="self-center whitespace-nowrap relative text-sm sm:text-xl font-semibold dark:text-white"
       >
-        {/*
-        <span className="px-2 py-1 bg-gradient-to-r from-green-500 via-green-500 to-white-500 rounded-lg text-white">
-          ExceLand
-        </span>
-       */ }
-
-        
-          <img className="h-12"  src="./Exl.png" alt="logo" />
+        <img className="h-12" src="./Exl.png" alt="logo" />
       </Link>
 
       <div className="flex gap-2 md:order-2">
@@ -30,17 +22,17 @@ export default function Header() {
       </div>
 
       <Navbar.Collapse>
-        <Navbar.Link active={path === '/'} as={"div"}>
+        <Navbar.Link active={path === '/'} as={'div'}>
           <Link to="/">Home</Link>
         </Navbar.Link>
-        <Navbar.Link active={path === '/about'}as={"div"}>
+        <Navbar.Link active={path === '/about'} as={'div'}>
           <Link to="/about">About</Link>
         </Navbar.Link>
 
-        <Navbar.Link active={path === '/about'}as={"div"}>
+        <Navbar.Link active={path === '/about'} as={'div'}>
           <Link to="/about">About</Link>
         </Navbar.Link>
-        <Navbar.Link active={path === '/projects'}as={"div"}>
+        <Navbar.Link active={path === '/projects'} as={'div'}>
           <Link to="/projects">Projects</Link>
         </Navbar.Link>
       </Navbar.Collapse>
