@@ -2,25 +2,29 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { v4 as uuidv4 } from 'uuid';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from '../redux/user/userSlice';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (!formData.username || !formData.email || !formData.password) {
-    //   return setErrorMessage('Please fill out all fields.');
-    // }
-    try {
-      setLoading(true);
-      setErrorMessage(null);
+    if (!formData.email || !formData.password) {
+      return dispatch(signInFailure('Please fill all the fields'));
+    }
+  try {
+      dispatch(signInStart());
       const res = await fetch('api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,25 +36,23 @@ export default function SignUp() {
         }),
       });
 
-
       const {
         result: { status, responce },
       } = await res.json();
 
-      console.log({ status })
+      console.log({ responce });
 
       if (status === 'rejected') {
-        setLoading(false);
-        return setErrorMessage(responce);
+          dispatch(signInFailure(status));
       }
-      setLoading(false);
+
       if (res.ok) {
-        // navigate('/');
+        dispatch(signInSuccess(responce));
+        navigate('/');
       }
     } catch (error) {
-      setErrorMessage(error.message);
-      setLoading(false);
-    }
+      dispatch(signInFailure(error.message));
+    } 
   };
   return (
     <div className="min-h-screen mt-20">
