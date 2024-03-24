@@ -15,32 +15,37 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.username || !formData.email || !formData.password) {
-      return setErrorMessage('Please fill out all fields.');
-    }
+    // if (!formData.username || !formData.email || !formData.password) {
+    //   return setErrorMessage('Please fill out all fields.');
+    // }
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await fetch('api/auth/register', {
+      const res = await fetch('api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: uuidv4(),
           type: 'call',
-          method: 'auth/register',
+          method: 'auth/signin',
           args: formData,
         }),
       });
+
+
       const {
         result: { status, responce },
       } = await res.json();
+
+      console.log({ status })
+
       if (status === 'rejected') {
         setLoading(false);
         return setErrorMessage(responce);
       }
       setLoading(false);
       if (res.ok) {
-        navigate('/');
+        // navigate('/');
       }
     } catch (error) {
       setErrorMessage(error.message);
