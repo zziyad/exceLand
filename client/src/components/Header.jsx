@@ -1,5 +1,5 @@
 import { Avatar, Button, Navbar, Dropdown } from 'flowbite-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { signoutSuccess } from '../redux/user/userSlice';
@@ -9,7 +9,6 @@ import { toggleTheme } from '../redux/theme/themeSlice';
 export default function Header() {
   const path = useLocation().pathname;
   // const location = useLocation();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
@@ -28,7 +27,6 @@ export default function Header() {
       });
       if (res.ok) {
         dispatch(signoutSuccess());
-        navigate('/sign-in');
       }
     } catch (error) {
       console.log(error.message);
@@ -89,21 +87,22 @@ export default function Header() {
 
       <Navbar.Collapse>
         <Navbar.Link active={path === '/'} as={'div'}>
-          <Link to="/">Home</Link>
+          <Link to="/">Ana Səifə</Link>
         </Navbar.Link>
         <Navbar.Link active={path === '/about'} as={'div'}>
-          <Link to="/about">About</Link>
+          <Link to="/about">Haqqımızda</Link>
         </Navbar.Link>
 
-        <Navbar.Link active={path === '/about'} as={'div'}>
-          <Link to="/about">About</Link>
+        <Navbar.Link active={path === '/activity'} as={'div'}>
+          <Link to="/activity">Fəaliyyət Sahəsi</Link>
         </Navbar.Link>
-        <Navbar.Link active={path === '/projects'} as={'div'}>
-          <Link to="/projects">Projects</Link>
+        <Navbar.Link active={path === '/blog'} as={'div'}>
+          <Link to="/blog">Blog</Link>
+        </Navbar.Link>
+        <Navbar.Link active={path === '/contact'} as={'div'}>
+          <Link to="/contact">Əlaqə</Link>
         </Navbar.Link>
       </Navbar.Collapse>
-
-
     </Navbar>
   );
 }
