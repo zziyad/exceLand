@@ -56,18 +56,22 @@ export default function Header() {
             arrowIcon={false}
             inline
             label={
-              <Avatar alt="user" img={currentUser.profilePicture} rounded />
+              <Avatar alt="user" img={currentUser.profile_picture} rounded />
             }
           >
             <Dropdown.Header>
               <span className="block text-sm">{currentUser.username}</span>
-              <span className="block text-sm font-medium truncate">
-                {currentUser.email}
-              </span>
             </Dropdown.Header>
             <Link to={'/dashboard?tab=profile'}>
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
+            {currentUser.is_admin ? (
+              <Link to={'/create-post'}>
+                <Dropdown.Item>Create Post</Dropdown.Item>
+              </Link>
+            ) : (
+              <></>
+            )}
             <Dropdown.Divider />
             <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
           </Dropdown>
