@@ -108,8 +108,10 @@ const serveStatic = (staticPath) => async (req, res) => {
     res.writeHead(200, { ...HEADERS, 'Content-Type': mimeType });
     res.end(data);
   } catch (err) {
-    res.statusCode = 404;
-    res.end('"File is not found"');
+    const filePath = node.path.join(staticPath, '/index.html');
+    const data = await node.fs.promises.readFile(filePath);
+
+    res.end(data);
   }
 };
 
