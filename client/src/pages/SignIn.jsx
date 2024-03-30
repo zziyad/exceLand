@@ -1,58 +1,30 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
-import { v4 as uuidv4 } from 'uuid';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  signInStart,
-  signInSuccess,
-  signInFailure,
-} from '../redux/user/userSlice';
+import { signInFailure } from '../redux/user/userSlice';
+import useFetch from '../hooks/useFetch.jsx';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
   const { loading, error: errorMessage } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
+
+  const { appendData } = useFetch('api/auth/signin');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
       return dispatch(signInFailure('Please fill all the fields'));
     }
-  try {
-      dispatch(signInStart());
-      const res = await fetch('api/auth/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: uuidv4(),
-          type: 'call',
-          method: 'auth/signin',
-          args: formData,
-        }),
-      });
-
-      const {
-        result: { status, responce },
-      } = await res.json();
-
-      console.log({ responce });
-
-      if (status === 'rejected') {
-          dispatch(signInFailure(status));
-      }
-
-      if (res.ok) {
-        dispatch(signInSuccess(responce));
-        navigate('/');
-      }
+    try {
+      await appendData(formData);
     } catch (error) {
       dispatch(signInFailure(error.message));
-    } 
+    }
   };
   return (
     <div className="min-h-[70vh] mt-20">

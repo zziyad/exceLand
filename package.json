@@ -13,6 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "mongoose": "^8.2.3"
+    "mongoose": "^8.2.3",
+    "moongose": "^1.0.0",
+    "uninstall": "^0.0.0"
   }
 }

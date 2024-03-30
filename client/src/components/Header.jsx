@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { signoutSuccess } from '../redux/user/userSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { toggleTheme } from '../redux/theme/themeSlice';
+import useFetch from '../hooks/useFetch.jsx';
 
 export default function Header() {
   const path = useLocation().pathname;
@@ -12,25 +13,15 @@ export default function Header() {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
+  
+  const { appendData, data, errorStatus } = useFetch('api/post/create');
+
+
+
 
   const handleSignout = async () => {
-    try {
-      const res = await fetch('/api/auth/signout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: uuidv4(),
-          type: 'call',
-          method: 'auth/signout',
-          args: {},
-        }),
-      });
-      if (res.ok) {
-        dispatch(signoutSuccess());
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+    await appendData();
+      dispatch(signoutSuccess());
   };
 
   return (

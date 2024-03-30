@@ -110,14 +110,14 @@ export default function DashProfile() {
       });
 
       const {
-        result: { status, responce },
+        result: { status, response },
       } = await res.json();
 
       if (status === 'rejected') {
-        dispatch(updateFailure(responce));
-        setUpdateUserError(responce);
+        dispatch(updateFailure(response));
+        setUpdateUserError(response);
       } else {
-        const data = Object.assign(responce, currentUser);
+        const data = Object.assign(response, currentUser);
         dispatch(updateSuccess(data));
         setUpdateUserSuccess("User's profile updated successfully");
       }

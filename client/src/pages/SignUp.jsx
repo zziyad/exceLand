@@ -32,11 +32,11 @@ export default function SignUp() {
         }),
       });
       const {
-        result: { status, responce },
+        result: { status, response },
       } = await res.json();
       if (status === 'rejected') {
         setLoading(false);
-        return setErrorMessage(responce);
+        return setErrorMessage(response);
       }
       setLoading(false);
       if (res.ok) {
