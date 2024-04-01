@@ -53,7 +53,9 @@ export default function useFetch(url) {
           navigate('/');
           return;
         }
-        setData(d.result); //new object, it's seen as a state change
+        console.log({ res: d.result })
+        setData(d.result);
+        return d.result;
       })
       .catch((e) => {
         console.log(e);

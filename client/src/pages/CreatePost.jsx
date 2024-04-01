@@ -71,7 +71,6 @@ export default function CreatePost() {
 
   useEffect(() => {
     console.log({ data });
-    // const { status, response } = data;
 
     if (data?.response) navigate(`/post/${data?.response.slug}`);
   }, [data, navigate]);

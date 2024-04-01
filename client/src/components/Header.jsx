@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { signoutSuccess } from '../redux/user/userSlice';
-import { v4 as uuidv4 } from 'uuid';
 import { toggleTheme } from '../redux/theme/themeSlice';
 import useFetch from '../hooks/useFetch.jsx';
 
@@ -13,15 +12,12 @@ export default function Header() {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
-  
+
   const { appendData, data, errorStatus } = useFetch('api/post/create');
-
-
-
 
   const handleSignout = async () => {
     await appendData();
-      dispatch(signoutSuccess());
+    dispatch(signoutSuccess());
   };
 
   return (
@@ -53,8 +49,8 @@ export default function Header() {
             <Dropdown.Header>
               <span className="block text-sm">{currentUser.username}</span>
             </Dropdown.Header>
-            <Link to={'/dashboard?tab=profile'}>
-              <Dropdown.Item>Profile</Dropdown.Item>
+            <Link to={'/dashboard?tab=dash'}>
+              <Dropdown.Item>Dashboard</Dropdown.Item>
             </Link>
             {currentUser.is_admin ? (
               <Link to={'/create-post'}>
@@ -88,9 +84,7 @@ export default function Header() {
           <Link to="/about">Haqqımızda</Link>
         </Navbar.Link>
 
-        <Navbar.Link active={path === '/activity'} as={'div'}>
-          <Link to="/activity">Fəaliyyət Sahəsi</Link>
-        </Navbar.Link>
+       
         <Navbar.Link active={path === '/blog'} as={'div'}>
           <Link to="/blog">Blog</Link>
         </Navbar.Link>

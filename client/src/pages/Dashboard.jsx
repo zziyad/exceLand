@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import DashSidebar from '../components/DashSidebar.jsx';
 import DashProfile from '../components/DashProfile';
-// import DashPosts from '../components/DashPosts';
+import DashPosts from '../components/DashPosts';
 // import DashUsers from '../components/DashUsers';
 // import DashComments from '../components/DashComments';
 
@@ -17,13 +17,15 @@ export default function Dashboard() {
     }
   }, [location.search]);
   return (
-    <div className='min-h-[80vh] flex flex-col md:flex-row'>
-      <div className='md:w-56'>
+    <div className="min-h-[80vh] flex flex-col md:flex-row">
+      <div className="md:w-56">
         {/* Sidebar */}
         <DashSidebar />
       </div>
       {/* profile... */}
       {tab === 'profile' && <DashProfile />}
+      {/* posts... */}
+      {tab === 'posts' && <DashPosts />}
     </div>
   );
 }

@@ -9,16 +9,13 @@ import {
 } from 'react-icons/hi';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { signoutSuccess } from '../redux/user/userSlice';
-import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 
 export default function DashSidebar() {
   const location = useLocation();
-  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const [tab, setTab] = useState('');
+
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get('tab');
@@ -26,31 +23,12 @@ export default function DashSidebar() {
       setTab(tabFromUrl);
     }
   }, [location.search]);
-  const handleSignout = async () => {
-    try {
-      const res = await fetch('/api/auth/signout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: uuidv4(),
-          type: 'call',
-          method: 'auth/signout',
-          args: {},
-        }),
-      });
-      if (res.ok) {
-        dispatch(signoutSuccess());
-        // navigate('/sign-in');
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+
   return (
     <Sidebar className="w-full md:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup className="flex flex-col gap-1">
-          {currentUser && currentUser.isAdmin && (
+          {currentUser && currentUser.is_admin && (
             <Link to="/dashboard?tab=dash">
               <Sidebar.Item
                 active={tab === 'dash' || !tab}
@@ -65,14 +43,14 @@ export default function DashSidebar() {
             <Sidebar.Item
               active={tab === 'profile'}
               icon={HiUser}
-              label={currentUser.isAdmin ? 'Admin' : 'User'}
+              label={currentUser.is_admin ? 'Admin' : 'User'}
               labelColor="dark"
               as="div"
             >
               Profile
             </Sidebar.Item>
           </Link>
-          {currentUser.isAdmin && (
+          {currentUser.is_admin && (
             <Link to="/dashboard?tab=posts">
               <Sidebar.Item
                 active={tab === 'posts'}
@@ -83,7 +61,7 @@ export default function DashSidebar() {
               </Sidebar.Item>
             </Link>
           )}
-          {currentUser.isAdmin && (
+          {currentUser.is_admin && (
             <>
               <Link to="/dashboard?tab=users">
                 <Sidebar.Item
@@ -105,13 +83,6 @@ export default function DashSidebar() {
               </Link>
             </>
           )}
-          <Sidebar.Item
-            icon={HiArrowSmRight}
-            className="cursor-pointer"
-            onClick={handleSignout}
-          >
-            Sign Out
-          </Sidebar.Item>
         </Sidebar.ItemGroup>
       </Sidebar.Items>
     </Sidebar>

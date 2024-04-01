@@ -10,14 +10,13 @@ import {
 import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { v4 as uuidv4 } from 'uuid';
 import {
   updateStart,
   updateSuccess,
   updateFailure,
 } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import useFetch from '../hooks/useFetch.jsx';
 
 export default function DashProfile() {
   const { currentUser, loading } = useSelector((state) => state.user);
@@ -32,6 +31,7 @@ export default function DashProfile() {
   const filePickerRef = useRef();
   const dispatch = useDispatch();
 
+  const { appendData, data, errorStatus } = useFetch('api/user/update');
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -84,7 +84,7 @@ export default function DashProfile() {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     setUpdateUserError(null);
     setUpdateUserSuccess(null);
@@ -97,35 +97,33 @@ export default function DashProfile() {
       return;
     }
     try {
-      dispatch(updateStart());
-      const res = await fetch('api/user/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: uuidv4(),
-          type: 'call',
-          method: 'user/update',
-          args: formData,
-        }),
-      });
-
-      const {
-        result: { status, response },
-      } = await res.json();
-
-      if (status === 'rejected') {
-        dispatch(updateFailure(response));
-        setUpdateUserError(response);
-      } else {
-        const data = Object.assign(response, currentUser);
-        dispatch(updateSuccess(data));
-        setUpdateUserSuccess("User's profile updated successfully");
-      }
+      await appendData(formData);
     } catch (error) {
       dispatch(updateFailure(error.message));
       setUpdateUserError(error.message);
     }
   };
+
+  useState(() => {
+    console.log({ data })
+    if (data?.status) {
+      dispatch(updateStart());
+      const { status, response } = data;
+
+      console.log(' DATA IS HERE ')
+      if (status === 'rejected') {
+        dispatch(updateFailure(response));
+        setUpdateUserError(response);
+      } else {
+        const data = Object.assign(response, currentUser);
+        console.log({ UPTADES_DATA: data })
+        dispatch(updateSuccess(data));
+        setUpdateUserSuccess("User's profile updated successfully");
+      }
+    } 
+  }, [data]);
+
+
 
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
@@ -192,17 +190,7 @@ export default function DashProfile() {
         >
           {loading ? 'Loading...' : 'Update'}
         </Button>
-        {currentUser.is_admin && (
-          <Link to={'/create-post'}>
-            <Button
-              type="button"
-              gradientDuoTone="purpleToPink"
-              className="w-full"
-            >
-              Create a post
-            </Button>
-          </Link>
-        )}
+       
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         {updateUserSuccess && (
