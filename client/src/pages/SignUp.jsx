@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
-import { v4 as uuidv4 } from 'uuid';
+import { useAsyncFn } from '../hooks/useAsync';
+import { signin } from '../services/user.jsx';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -9,8 +10,23 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const signinUserFn = useAsyncFn(signin);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
+  };
+
+  const onSignin = (formData) => {
+    setLoading(true);
+    setErrorMessage(null);
+    return signinUserFn
+      .execute(formData)
+      .then(() => {
+        navigate('/nenya');
+      })
+      .catch((error) => {
+        setErrorMessage(error.message);
+        setLoading(false);
+      });
   };
 
   const handleSubmit = async (e) => {
@@ -19,29 +35,7 @@ export default function SignUp() {
       return setErrorMessage('Please fill out all fields.');
     }
     try {
-      setLoading(true);
-      setErrorMessage(null);
-      const res = await fetch('api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: uuidv4(),
-          type: 'call',
-          method: 'auth/register',
-          args: formData,
-        }),
-      });
-      const {
-        result: { status, response },
-      } = await res.json();
-      if (status === 'rejected') {
-        setLoading(false);
-        return setErrorMessage(response);
-      }
-      setLoading(false);
-      if (res.ok) {
-        navigate('/sign-in');
-      }
+      onSignin(formData);
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);

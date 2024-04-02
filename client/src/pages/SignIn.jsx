@@ -1,19 +1,38 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { signInFailure } from '../redux/user/userSlice';
-import useFetch from '../hooks/useFetch.jsx';
+import { useAsyncFn } from '../hooks/useAsync';
+import { signin } from '../services/user.jsx';
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from '../redux/user/userSlice';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
   const { loading, error: errorMessage } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const signinUserFn = useAsyncFn(signin);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
-  const { appendData } = useFetch('api/auth/signin');
+  const onSignin = (formData) => {
+    dispatch(signInStart());
+    return signinUserFn
+      .execute(formData)
+      .then((data) => {
+        dispatch(signInSuccess(data));
+        navigate('/');
+      })
+      .catch((error) => {
+        dispatch(signInFailure(error.message));
+      });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,11 +40,12 @@ export default function SignUp() {
       return dispatch(signInFailure('Please fill all the fields'));
     }
     try {
-      await appendData(formData);
+      onSignin(formData);
     } catch (error) {
       dispatch(signInFailure(error.message));
     }
   };
+
   return (
     <div className="min-h-[70vh] mt-20">
       {/* left*/}

@@ -16,14 +16,15 @@ import {
   updateFailure,
 } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
-import useFetch from '../hooks/useFetch.jsx';
+import { useAsyncFn } from '../hooks/useAsync';
+import { updateUser } from '../services/user.jsx';
 
 export default function DashProfile() {
   const { currentUser, loading } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
-  const [imageFileUploadError, setImageFileUploadError] = useState(null);
+  const [, setImageFileUploadError] = useState(null);
   const [imageFileUploading, setImageFileUploading] = useState(false);
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
   const [updateUserError, setUpdateUserError] = useState(null);
@@ -31,7 +32,8 @@ export default function DashProfile() {
   const filePickerRef = useRef();
   const dispatch = useDispatch();
 
-  const { appendData, data, errorStatus } = useFetch('api/user/update');
+  const updateUserFn = useAsyncFn(updateUser);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -61,7 +63,7 @@ export default function DashProfile() {
 
         setImageFileUploadProgress(progress.toFixed(0));
       },
-      (error) => {
+      () => {
         setImageFileUploadError(
           'Could not upload image (File must be less than 2MB)',
         );
@@ -84,7 +86,22 @@ export default function DashProfile() {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
- const handleSubmit = async (e) => {
+  const onUserUpdate = (formData) => {
+    dispatch(updateStart());
+    return updateUserFn
+      .execute(formData)
+      .then((data) => {
+        const updatedUser = { ...currentUser, ...data };
+        dispatch(updateSuccess(updatedUser));
+        setUpdateUserSuccess("User's profile updated successfully");
+      })
+      .catch((error) => {
+        dispatch(updateFailure(error.message));
+        setUpdateUserError(error.message);
+      });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setUpdateUserError(null);
     setUpdateUserSuccess(null);
@@ -96,34 +113,10 @@ export default function DashProfile() {
       setUpdateUserError('Please wait for image to upload');
       return;
     }
-    try {
-      await appendData(formData);
-    } catch (error) {
-      dispatch(updateFailure(error.message));
-      setUpdateUserError(error.message);
-    }
+    onUserUpdate(formData);
   };
 
-  useState(() => {
-    console.log({ data })
-    if (data?.status) {
-      dispatch(updateStart());
-      const { status, response } = data;
-
-      console.log(' DATA IS HERE ')
-      if (status === 'rejected') {
-        dispatch(updateFailure(response));
-        setUpdateUserError(response);
-      } else {
-        const data = Object.assign(response, currentUser);
-        console.log({ UPTADES_DATA: data })
-        dispatch(updateSuccess(data));
-        setUpdateUserSuccess("User's profile updated successfully");
-      }
-    } 
-  }, [data]);
-
-
+  //
 
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
@@ -190,7 +183,6 @@ export default function DashProfile() {
         >
           {loading ? 'Loading...' : 'Update'}
         </Button>
-       
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         {updateUserSuccess && (

@@ -1,23 +1,30 @@
 import { Avatar, Button, Navbar, Dropdown } from 'flowbite-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { signoutSuccess } from '../redux/user/userSlice';
 import { toggleTheme } from '../redux/theme/themeSlice';
-import useFetch from '../hooks/useFetch.jsx';
+import { useAsyncFn } from '../hooks/useAsync';
+import { signout } from '../services/user.jsx';
 
 export default function Header() {
   const path = useLocation().pathname;
-  // const location = useLocation();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
-
-  const { appendData, data, errorStatus } = useFetch('api/post/create');
-
+  const signOutUserFn = useAsyncFn(signout);
+  const navigate = useNavigate();
+  const onSingout = () => {
+    return signOutUserFn
+      .execute()
+      .then(() => {
+        dispatch(signoutSuccess());
+        navigate('/nenya');
+      })
+      .catch(console.log);
+  };
   const handleSignout = async () => {
-    await appendData();
-    dispatch(signoutSuccess());
+    onSingout();
   };
 
   return (
@@ -84,7 +91,6 @@ export default function Header() {
           <Link to="/about">Haqqımızda</Link>
         </Navbar.Link>
 
-       
         <Navbar.Link active={path === '/blog'} as={'div'}>
           <Link to="/blog">Blog</Link>
         </Navbar.Link>

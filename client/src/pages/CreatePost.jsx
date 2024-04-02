@@ -12,7 +12,8 @@ import { app } from '../firebase';
 import { useState, useEffect } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import useFetch from '../hooks/useFetch.jsx';
+import { useAsyncFn } from '../hooks/useAsync';
+import { create } from '../services/post.jsx';
 
 export default function CreatePost() {
   const [file, setFile] = useState(null);
@@ -21,7 +22,8 @@ export default function CreatePost() {
   const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
 
-  const { appendData, data, errorStatus } = useFetch('api/post/create');
+  const createPostFn = useAsyncFn(create);
+
   const navigate = useNavigate();
   const handleUpdloadImage = async () => {
     try {
@@ -41,7 +43,7 @@ export default function CreatePost() {
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setImageUploadProgress(progress.toFixed(0));
         },
-        (error) => {
+        () => {
           setImageUploadError('Image upload failed');
           setImageUploadProgress(null);
         },
@@ -60,20 +62,27 @@ export default function CreatePost() {
     }
   };
 
+  const onPostCreate = (formData) => {
+    return createPostFn
+      .execute(formData)
+      .then((data) => {
+        setPublishError(null);
+        navigate(`/post/${data.slug}`);
+      })
+      .catch((error) => {
+        setPublishError(error.message);
+      });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await appendData(formData);
+      onPostCreate(formData);
     } catch (error) {
       setPublishError('Something went wrong');
     }
   };
 
-  useEffect(() => {
-    console.log({ data });
-
-    if (data?.response) navigate(`/post/${data?.response.slug}`);
-  }, [data, navigate]);
 
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
