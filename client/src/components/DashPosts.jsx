@@ -8,6 +8,7 @@ import { getPosts } from '../services/post.jsx';
 export default function DashPosts() {
   const { currentUser } = useSelector((state) => state.user);
   const [userPosts, setUserPosts] = useState([]);
+  const [showMore, setShowMore] = useState(true);
   const getPostsFn = useAsyncFn(getPosts);
 
   useEffect(() => {
@@ -16,6 +17,7 @@ export default function DashPosts() {
         .execute({ userId: currentUser.id })
         .then((data) => {
           setUserPosts(data);
+          if (data.length < 9) setShowMore(false);
         })
         .catch((error) => {
           console.log({ error });
@@ -26,6 +28,19 @@ export default function DashPosts() {
       onGetPosts();
     }
   }, [currentUser.id]);
+
+  const handleShowMore = async () => {
+    const startIndex = userPosts.length;
+    return getPostsFn
+      .execute({ userId: currentUser.id, startIndex })
+      .then((data) => {
+        setUserPosts((prev) => [...prev, ...data]);
+        if (data.length < 9) setShowMore(false);
+      })
+      .catch((error) => {
+        console.log({ error });
+      });
+  };
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
@@ -83,6 +98,14 @@ export default function DashPosts() {
               </Table.Body>
             ))}
           </Table>
+          {showMore && (
+            <button
+              onClick={handleShowMore}
+              className="w-full text-teal-500 self-center text-sm py-7"
+            >
+              Show more
+            </button>
+          )}
         </>
       ) : (
         <p>You have no posts yet!</p>

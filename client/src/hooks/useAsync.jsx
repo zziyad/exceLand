@@ -26,7 +26,6 @@ function useAsyncInternal(func, dependencies, initialLoading = false) {
     setLoading(true);
     return func(...params)
       .then((data) => {
-        console.log({ data });
         setValue(data);
         setError(undefined);
         return data;
