@@ -8,4 +8,6 @@ export function getPosts(params) {
   return MakeRequest('api/post/getAll', params);
 }
 
-
+export function deletePost(params) {
+  return MakeRequest('api/post/delete', params);
+}
