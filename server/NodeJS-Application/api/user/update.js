@@ -49,7 +49,7 @@
     console.log({ target });
 
     if (JSON.stringify(target) === '{}') {
-      return { status: 'rejected', response: 'No fild is update' };
+      return { status: 'rejected', response: 'No fields have been updated' };
     }
 
     const user = await db.pg.row('users', { id });

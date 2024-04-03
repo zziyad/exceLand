@@ -4,7 +4,6 @@ async (table, id, entity = 'ENTITY') => {
   Object.defineProperty(Entity, 'name', desc);
   return async (data) => {
     const rows = await db.pg.insert(table, data);
-    console.log({ rows });
     return Object.assign(new Entity(), rows[0]);
   };
 };

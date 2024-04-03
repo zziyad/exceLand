@@ -8,7 +8,7 @@ redisClient.on('error', (error) => console.error(error));
 const redisSet = node.util.promisify(redisClient.setex).bind(redisClient);
 const redisGet = node.util.promisify(redisClient.get).bind(redisClient);
 const redisDel = node.util.promisify(redisClient.del).bind(redisClient);
-const DEFAULT_SESSION_TIME = 60; //SEC|60 * 60
+const DEFAULT_SESSION_TIME = 3600; //SEC|60 * 60
 
 class Session {
   constructor(token, data) {
