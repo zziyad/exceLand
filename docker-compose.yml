@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  api-exceland:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-exceland
+    environment:
+      - DB_HOST=pg-exceland
+      - REDIS_HOST=redis-exceland
+    volumes:
+      - ./application:/usr/server/application
+    depends_on:
+      - pg-exceland
+      - redis-exceland
+    ports:
+      - 127.0.0.1:8000:8000
+      - 127.0.0.1:8001:8001
+    restart: always
+
+  pg-exceland:
+    image: postgres:16.1-alpine3.19
+    container_name: pg-exceland
+    environment:
+      - POSTGRES_USER=marcus
+      - POSTGRES_PASSWORD=marcus
+      - POSTGRES_DB=exceland
+    volumes:
+      - ./data/postgres/:/var/lib/postgresql/data
+      - ./database/structure.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./database/data.sql:/docker-entrypoint-initdb.d/2.sql
+    ports:
+      - 127.0.0.1:5433:5432
+    restart: always
+
+  redis-exceland:
+    image: redis:7-alpine
+    container_name: redis-exceland
+    ports:
+      - 127.0.0.1:6371:6379
+    restart: always
+
+networks:
+  default:
+    name: api-exceland-network
