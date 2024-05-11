@@ -1,7 +1,0 @@
-node_modules
-/application/tasks
-*.log
-*.done
-*.pem
-.DS_Store
-data/
