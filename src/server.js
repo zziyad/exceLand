@@ -8,7 +8,7 @@ redisClient.on('error', (error) => console.error(error));
 const redisSet = node.util.promisify(redisClient.setex).bind(redisClient);
 const redisGet = node.util.promisify(redisClient.get).bind(redisClient);
 const redisDel = node.util.promisify(redisClient.del).bind(redisClient);
-const DEFAULT_SESSION_TIME = 3600; //SEC|60 * 60
+const DEFAULT_SESSION_TIME = 360000; //SEC|60 * 60
 
 class Session {
   constructor(token, data) {
@@ -32,7 +32,7 @@ class Client {
   constructor(transport, console) {
     this.#transport = transport;
     this.ip = transport.ip;
-    this.session = null;
+    // this.session = null;
     this.console = console;
   }
 
@@ -100,6 +100,19 @@ class Client {
     if (!this.session) return;
     redisDel(this.session.token);
   }
+
+  async saveFileStream(fileStream, fileName) {
+    const pathTosave = '../application/static';
+    // const pathTosave = '../../exceland/public';
+    const filePath = node.path.join(__dirname, pathTosave, fileName);
+    console.log({ filePath });
+    const writeStream = node.fs.createWriteStream(filePath);
+    return new Promise((resolve, reject) => {
+      fileStream.pipe(writeStream);
+      fileStream.on('end', () => resolve(filePath));
+      fileStream.on('error', reject);
+    });
+  }
 }
 
 const serveStatic = (staticPath) => async (req, res) => {
@@ -115,6 +128,7 @@ const serveStatic = (staticPath) => async (req, res) => {
     const filePath = node.path.join(staticPath, '/index.html');
     const data = await node.fs.promises.readFile(filePath);
 
+    console.log('STATIC', req.url, data);
     res.end(data);
   }
 };
@@ -136,9 +150,8 @@ class Server {
 
   listen(port) {
     this.httpServer.on('request', async (req, res) => {
-
       this.id = req.headers['authorization'];
-
+      // console.log({ URL: req.url, id: this.id, tt: req.headers });
       if (req.url.includes('api') && !req.url.startsWith('/api')) {
         req.url = extractPath(req.url);
       }
@@ -147,8 +160,15 @@ class Server {
         this.staticHandler(req, res);
         return;
       }
+
       const transport = new HttpTransport(this, req, res);
       const client = new Client(transport);
+
+      if (req.method === 'POST' && req.url === '/api/upload') {
+        console.log('HEREEEEE');
+        await this.handleUpload(req, res, client);
+        return;
+      }
 
       if (req.method !== 'POST') return transport.error(403);
       const data = await receiveBody(req);
@@ -160,6 +180,39 @@ class Server {
     });
 
     this.httpServer.listen(port);
+  }
+
+  async handleUpload(req, res, client) {
+    const multiparty = npm.multiparty;
+    const form = new multiparty.Form();
+
+    form.parse(req, async (error, fields, files) => {
+      if (error) {
+        client.error(500, { error: 'File upload failed' });
+        return;
+      }
+
+      console.log({ fields });
+
+      try {
+        const fileSavePromises = [];
+        const fileNames = [];
+        Object.keys(files).forEach((key) => {
+          const file = files[key][0];
+          const fileStream = node.fs.createReadStream(file.path);
+          const fileName = fields[`fileName${key.replace('file', '')}`][0];
+          const uniqueFN = `${node.crypto.randomUUID()}_${fileName}`;
+          fileNames.push(uniqueFN);
+          fileSavePromises.push(client.saveFileStream(fileStream, uniqueFN));
+        });
+
+        await Promise.all(fileSavePromises);
+        console.log({ fileNames });
+        client.send({ status: 'success', paths: fileNames }, 200);
+      } catch (error) {
+        client.error(500, { error: 'File upload failed' });
+      }
+    });
   }
 
   async rpc(client, data) {
@@ -183,8 +236,8 @@ class Server {
     const tid = this.id;
     const cookies = client.getCookies();
     const token = cookies[tid];
-    console.log({ cookies, tid, token, css: client.session });
-    if (!token) console.log({ token });
+    console.log({ cookies, tid, token, css: client });
+    if (!token) console.log({ NO_TOKE: token });
     await client.restoreSession(token);
     const { secret } = this.application.config.sessions;
     const validToken = metarhia.metautil.validateToken(secret, token);

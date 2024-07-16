@@ -10,13 +10,12 @@ services:
       - DB_HOST=pg-exceland
       - REDIS_HOST=redis-exceland
     volumes:
-      - ./application:/usr/server/application
+      - ./:/usr/server/
     depends_on:
       - pg-exceland
       - redis-exceland
     ports:
-      - 127.0.0.1:8000:8000
-      - 127.0.0.1:8001:8001
+      - 0.0.0.0:80:8001
     restart: always
 
   pg-exceland:
@@ -38,7 +37,21 @@ services:
     image: redis:7-alpine
     container_name: redis-exceland
     ports:
-      - 127.0.0.1:6371:6379
+      - 127.0.0.1:6379:6379
+    restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@root.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - 0.0.0.0:5050:80
+    volumes:
+      - ./exceland.backup:/pgadmin4/exceland.backup
+    depends_on:
+      - pg-exceland
     restart: always
 
 networks:

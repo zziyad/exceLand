@@ -19,7 +19,7 @@ const HEADERS = {
   'Strict-Transport-Security': 'max-age=31536000; includeSubdomains; preload',
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type Authorization',
 };
 
 const TOKEN = 'token';
@@ -95,14 +95,14 @@ class HttpTransport extends Transport {
   //   this.res.setHeader('Set-Cookie', cookie);
   // }
 
-  sendSessionCookie(token, TOKEN) {
+  sendSessionCookie(token, sid) {
     const host = metautil.parseHost(this.req.headers.host);
     const futureDate = new Date(Date.now() + 1 * 60 * 60 * 1000);
 
     // + 7 * 60 * 60 * 1000,
     console.log({ futureDate });
     const maxAgeSeconds = 1 * 60 * 60;
-    let cookie = `${TOKEN}=${token}; Max-Age=${maxAgeSeconds}; Expires=${futureDate.toUTCString()}; ${COOKIE_HOST}=${host};`; // Add Secure attribute
+    let cookie = `${sid}=${token}; Max-Age=${maxAgeSeconds}; Expires=${futureDate.toUTCString()}; ${COOKIE_HOST}=${host};`; // Add Secure attribute
     cookie += '; HttpOnly';
     console.log({ cookie });
     this.res.setHeader('Set-Cookie', cookie);
@@ -115,7 +115,7 @@ class HttpTransport extends Transport {
     this.res.setHeader(
       'Set-Cookie',
       `${this.req.headers.authorization}=deleted; Expires=${EPOCH}; ${LOCATION}=` +
-        host,
+      host,
     );
   }
 

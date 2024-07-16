@@ -5,7 +5,7 @@
     if (postObject.limit === 1 && postObject.postId === null) {
       return {
         status: 'rejected',
-        response: 'No specefic post page found ...',
+        response: 'No post',
       };
     }
     try {

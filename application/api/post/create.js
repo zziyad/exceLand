@@ -5,14 +5,15 @@
       return { status: 'rejected', response: 'Empty post object' };
     }
     const { id } = context.client.session.state;
+    console.log({ post, id });
     try {
       const result = await domain.post.create(post, id);
       return { status: 'fulfilled', response: result };
     } catch (error) {
-      console.error(error);
+      console.error({ ERRRR: error });
       return {
         status: 'rejected',
-        response: error,
+        response: error.message,
       };
     }
   },
