@@ -3,7 +3,7 @@
 const { node, npm, metarhia } = require('./dependencies.js');
 const { receiveBody, jsonParse, extractPath } = require('../lib/common.js');
 const { HttpTransport, MIME_TYPES, HEADERS } = require('./transport.js');
-const redisClient = npm.redis.createClient('6379', '127.0.0.1');
+const redisClient = npm.redis.createClient('6379', 'redis-exceland');
 redisClient.on('error', (error) => console.error(error));
 const redisSet = node.util.promisify(redisClient.setex).bind(redisClient);
 const redisGet = node.util.promisify(redisClient.get).bind(redisClient);
