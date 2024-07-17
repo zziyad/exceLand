@@ -11,7 +11,7 @@ services:
       - REDIS_HOST=redis-exceland
     volumes:
       - ./:/usr/server/
-      - /usp/server/node_modules
+      - /usr/server/node_modules
     depends_on:
       - pg-exceland
       - redis-exceland
