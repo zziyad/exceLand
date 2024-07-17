@@ -1,5 +1,5 @@
 ({
-  host: '127.0.0.1',
+  host: 'redis-exceland',
   port: 5432,
   database: 'exceland',
   user: 'marcus',
