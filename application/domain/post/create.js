@@ -2,7 +2,7 @@ async (post, userId) => {
   const { create } = await lib.repository;
   const { title, content, category, images, main_image_index } = post;
 
-  console.log({ post });
+  console.log({ POST_CREATE: post });
 
   const slug = title
     .split(' ')
@@ -13,7 +13,7 @@ async (post, userId) => {
   try {
     // Create a new instance for new_posts
     const postClass = await create('new_posts', 'id');
-    console.log({ postClass });
+    // console.log({ postClass });
     const newPost = await postClass({
       user_id: userId,
       title,
@@ -34,16 +34,14 @@ async (post, userId) => {
       db.pg.query(query, values);
     }
 
-    await db.client.query('COMMIT');
+    // await db.client.query('COMMIT');
     return newPost;
   } catch (error) {
-    await db.client.query('ROLLBACK');
+    // await db.client.query('ROLLBACK');
     if (error.code === '23505') {
       throw new Error(`Duplicate - ${error.message}`);
     }
 
     throw new Error(error);
-  } finally {
-    db.client.release();
   }
 };

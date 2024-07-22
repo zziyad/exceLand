@@ -19,7 +19,7 @@ async ({
     searchTerm,
   ];
 
-  console.log({ values, postId });
+  // console.log({ values, postId });
 
   try {
     const { get } = await lib.repository;

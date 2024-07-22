@@ -2,7 +2,7 @@
   access: 'public',
   method: async (formData) => {
     //TODO: check formData is it empty or not
-    console.log({ formData });
+    // console.log({ formData });
     try {
       const result = await domain.post.update(formData);
       return { status: 'fulfilled', response: result };

@@ -1,7 +1,7 @@
 'use strict';
 
 const { node, npm, metarhia } = require('./dependencies.js');
-const { receiveBody, jsonParse, extractPath } = require('../lib/common.js');
+const { receiveBody, jsonParse, extractPath, generateUniqueFileName } = require('../lib/common.js');
 const { HttpTransport, MIME_TYPES, HEADERS } = require('./transport.js');
 const redisClient = npm.redis.createClient('6379', '127.0.0.1');
 redisClient.on('error', (error) => console.error(error));
@@ -52,7 +52,7 @@ class Client {
     const { cookie } = this.#transport.req.headers;
     if (!cookie) return {};
     const z = metarhia.metautil.parseCookies(cookie);
-    console.log({ cookieZ: z });
+    // console.log({ cookieZ: z });
     return z;
   }
 
@@ -92,7 +92,7 @@ class Client {
   }
 
   removeSession(token) {
-    console.log({ ses: this.session });
+    // console.log({ ses: this.session });
     this.#transport.removeSessionCookie(token);
   }
 
@@ -101,11 +101,13 @@ class Client {
     redisDel(this.session.token);
   }
 
-  async saveFileStream(fileStream, fileName) {
-    const pathTosave = '../application/static';
-    // const pathTosave = '../../exceland/public';
-    const filePath = node.path.join(__dirname, pathTosave, fileName);
-    console.log({ filePath });
+  async saveFileStream(fileStream, filePath) {
+    // const pathTosave = '../application/static/images';
+    const pathTosave = `../../exceland/public/images`;
+
+    // const filePath = node.path.join(__dirname, pathTosave, fileName);
+
+    // console.log({ filePath, fileName, appPath: this.path });
     const writeStream = node.fs.createWriteStream(filePath);
     return new Promise((resolve, reject) => {
       fileStream.pipe(writeStream);
@@ -128,7 +130,7 @@ const serveStatic = (staticPath) => async (req, res) => {
     const filePath = node.path.join(staticPath, '/index.html');
     const data = await node.fs.promises.readFile(filePath);
 
-    console.log('STATIC', req.url, data);
+    // console.log('STATIC', req.url, data);
     res.end(data);
   }
 };
@@ -192,7 +194,10 @@ class Server {
         return;
       }
 
-      console.log({ fields });
+      const resourcesPath = node.path.join(
+        this.application.path,
+        './static/images/',
+      );
 
       try {
         const fileSavePromises = [];
@@ -201,9 +206,12 @@ class Server {
           const file = files[key][0];
           const fileStream = node.fs.createReadStream(file.path);
           const fileName = fields[`fileName${key.replace('file', '')}`][0];
-          const uniqueFN = `${node.crypto.randomUUID()}_${fileName}`;
-          fileNames.push(uniqueFN);
-          fileSavePromises.push(client.saveFileStream(fileStream, uniqueFN));
+          const uniqueFN = generateUniqueFileName(fileName);
+          const ABC_PATH = resourcesPath + uniqueFN;
+          const pathToSend = `../images/${uniqueFN}`;
+          fileNames.push(pathToSend);
+          console.log({ fields, ABC_PATH });
+          fileSavePromises.push(client.saveFileStream(fileStream, ABC_PATH));
         });
 
         await Promise.all(fileSavePromises);
@@ -236,7 +244,7 @@ class Server {
     const tid = this.id;
     const cookies = client.getCookies();
     const token = cookies[tid];
-    console.log({ cookies, tid, token, css: client });
+    // console.log({ cookies, tid, token, css: client });
     if (!token) console.log({ NO_TOKE: token });
     await client.restoreSession(token);
     const { secret } = this.application.config.sessions;

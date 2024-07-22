@@ -17,6 +17,7 @@
     "metasql": "^3.0.0-alpha.2",
     "metautil": "^3.7.2",
     "multiparty": "^4.2.3",
+    "nodemailer": "^6.9.14",
     "pg": "^8.8.0",
     "redis": "^3.0.2",
     "ws": "^8.12.0"
