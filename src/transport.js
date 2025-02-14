@@ -1,7 +1,9 @@
+/* eslint-disable max-len */
 'use strict';
 
 const http = require('node:http');
 const metautil = require('metautil');
+const { Readable } = require('node:stream');
 
 const MIME_TYPES = {
   html: 'text/html; charset=UTF-8',
@@ -22,11 +24,11 @@ const HEADERS = {
   'Access-Control-Allow-Headers': 'Content-Type Authorization',
 };
 
-const TOKEN = 'token';
+// const TOKEN = 'token';
 const EPOCH = 'Thu, 01 Jan 1970 00:00:00 GMT';
 const FUTURE = 'Fri, 01 Jan 2100 00:00:00 GMT';
 const LOCATION = 'Path=/; Domain';
-const COOKIE_DELETE = `${TOKEN}=deleted; Expires=${EPOCH}; ${LOCATION}=`;
+// const COOKIE_DELETE = `${TOKEN}=deleted; Expires=${EPOCH}; ${LOCATION}=`;
 const COOKIE_HOST = `Expires=${FUTURE}; ${LOCATION}`;
 
 class Transport {
@@ -71,15 +73,26 @@ class HttpTransport extends Transport {
   options() {
     const { res } = this;
     if (res.headersSent) return;
-    res.writeHead(200, HEADERS);
+    res.writeHead(204, HEADERS);
     res.end();
   }
 
-  write(data, httpCode = 200, ext = 'json') {
-    if (this.res.writableEnded) return;
+  async write(data, httpCode = 200, ext = 'json', options = {}) {
+    const { res } = this;
+    if (res.writableEnded) return;
+    const streaming = data instanceof Readable;
     const mimeType = MIME_TYPES[ext] || MIME_TYPES.html;
-    this.res.writeHead(httpCode, { ...HEADERS, 'Content-Type': mimeType });
-    this.res.end(data);
+    const headers = { ...HEADERS, 'Content-Type': mimeType };
+    if (httpCode === 206) {
+      const { start, end, size = '*' } = options;
+      headers['Content-Range'] = `bytes ${start}-${end}/${size}`;
+      headers['Accept-Ranges'] = 'bytes';
+      headers['Content-Length'] = end - start + 1;
+    }
+    if (!streaming) headers['Content-Length'] = data.length;
+    res.writeHead(httpCode, headers);
+    if (streaming) data.pipe(res);
+    else res.end(data);
   }
 
   getCookies() {
@@ -115,7 +128,7 @@ class HttpTransport extends Transport {
     this.res.setHeader(
       'Set-Cookie',
       `${this.req.headers.authorization}=deleted; Expires=${EPOCH}; ${LOCATION}=` +
-      host,
+        host,
     );
   }
 

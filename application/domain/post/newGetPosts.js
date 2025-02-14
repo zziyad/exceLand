@@ -30,6 +30,8 @@ async ({
     const entity = await get(query);
     const posts = await entity(values);
 
+    // console.log({ posts: posts[0].post_images[posts[0].main_image_index] });
+
     return posts;
   } catch (error) {
     throw new Error('Error executing in domain get posts', { cause: error });

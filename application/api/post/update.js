@@ -1,5 +1,5 @@
 ({
-  access: 'public',
+  access: 'admin',
   method: async (formData) => {
     //TODO: check formData is it empty or not
     // console.log({ formData });

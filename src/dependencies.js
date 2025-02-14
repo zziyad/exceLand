@@ -33,7 +33,7 @@ const internals = [
   'dgram',
   'stream/promises',
 ];
-const optional = [];
+const optional = ['metawatch', 'metavm'];
 const metapkg = ['metautil', 'metasql', 'metaschema', ...optional];
 
 for (const name of metapkg) metarhia[name] = require(`${name}`);
@@ -62,5 +62,6 @@ if (pkg.dependencies) {
 
 Object.freeze(npm);
 Object.freeze(node);
+Object.freeze(metarhia);
 
 module.exports = { node, npm, metarhia };

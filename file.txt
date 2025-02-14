@@ -1,0 +1,394 @@
+CLASS$DECODE_R_FO_STATUS_VAC_TRUNC_P$ROOM$TYPE$RESV_STATUS$FO_STATUS$ROOM_STATUS$NEXT_BLOCKED$SLEEP_SKIP$CS_RESV_COUNT$ADULTS$CHILDREN$RESV_ROOM$BEGIN_DATE$END_DATE$FULL_NAME$COMPUTED_RESV_STATUS
+$3$201$JSTE$Arrival$VAC$IP$$$1$3$0$201$02-OCT-24$07-OCT-24$Gupta, Pawan$Due In
+$3$202$GARD$Not Reserved$VAC$IP$$$0
+$$203$KING$Stayover$OCC$DI$$$1$1$0$203$30-SEP-24$05-OCT-24$Nadzhafova, Illona$Checked In
+$$204$KING$Stayover$OCC$DI$$$1$2$0$204$29-SEP-24$05-OCT-24$Ali, Zeeshan$Checked In
+$2$205$KING$Arrival$VAC$PU$$$1$2$0$205$02-OCT-24$05-OCT-24$Alazbayrak, Aylin$Due In
+$$206$KING$Stayover$OCC$DI$$$1$1$0$206$01-OCT-24$04-OCT-24$Hassan, Sardar$Checked In
+$$207$KING$Stayover$OCC$DI$$$1$1$0$207$01-OCT-24$04-OCT-24$Haider, Ashiq$Checked In
+$1$208$DTWN$Arrival$VAC$IP$$$1$2$0$208$02-OCT-24$03-OCT-24$Alghamdi, Ali$Due In
+$$209$DTWN$Stayover$OCC$DI$$$1$2$0$209$30-SEP-24$03-OCT-24$Liyi, Meng$Checked In
+$$210$CCTY$Stayover$OCC$DI$$$1$1$0$210$01-OCT-24$04-OCT-24$Von, Waldburg$Checked In
+$3$211$DTWN$Arrival$VAC$IP$$$1$2$0$211$02-OCT-24$06-OCT-24$Maliuk, Aleksei$Due In
+$3$212$GARD$Not Reserved$VAC$IP$$$0
+$$213$KING$Due Out, Arrival$OCC$DI$$$2$1$0$213$30-SEP-24$02-OCT-24$Gabnasyrov-Roman, Mansurovich$Due Out
+$$213$KING$Due Out, Arrival$OCC$DI$$$2$1$0$213$02-OCT-24$04-OCT-24$Senem, Gocener$Due In
+$$214$GARD$Stayover$OCC$DI$$$1$2$0$214$01-OCT-24$06-OCT-24$Gunes, Bilge$Checked In
+$$215$KING$Stayover$OCC$DI$$$1$2$0$215$28-SEP-24$06-OCT-24$Ozcan, Habip$Checked In
+$$216$GARD$Due Out, Arrival$OCC$DI$$$2$2$0$216$28-SEP-24$02-OCT-24$Taparia, Sanjay$Due Out
+$$216$GARD$Due Out, Arrival$OCC$DI$$$2$1$0$216$02-OCT-24$03-OCT-24$Tokgoz, Pamir$Due In
+$$217$KING$Stayover$OCC$DI$$$1$2$0$217$01-OCT-24$05-OCT-24$Singh, Akshat-Ayush$Checked In
+$$218$GVTG$Stayover$OCC$DI$$$1$1$0$218$01-OCT-24$03-OCT-24$Xizhuo, Li$Checked In
+$$219$KING$Stayover$OCC$DI$$$1$2$0$219$01-OCT-24$05-OCT-24$Funnell, Stephen-Andrew$Checked In
+$$220$GARD$Stayover$OCC$DI$$$1$1$0$220$01-OCT-24$05-OCT-24$Dzidzaria, Aleksandre$Checked In
+$0$221$KING$Departed, Arrival$VAC$DI$$$1$2$0$221$02-OCT-24$05-OCT-24$Yazgibabaoglu, Nuriye$Due In
+$$222$DTWN$Stayover$OCC$DI$$$1$3$0$222$28-SEP-24$03-OCT-24$Javeri, Dipali-Rajiv$Checked In
+$$223$DTWN$Stayover$OCC$DI$$$1$1$0$223$01-OCT-24$03-OCT-24$Dacquisto, Leonardo$Checked In
+$$224$CCTY$Due Out, Arrival$OCC$DI$$$2$2$0$224$27-SEP-24$02-OCT-24$Ahuja, Kushagr$Due Out
+$$224$CCTY$Due Out, Arrival$OCC$DI$$$2$1$0$224$02-OCT-24$04-OCT-24$Buyuksunetci, Selcuk$Due In
+$1$225$DTWN$Arrival$VAC$IP$$$1$2$0$225$02-OCT-24$06-OCT-24$Brazhnikova, Elena$Due In
+$2$226$CCTY$Arrival$VAC$PU$$$1$1$0$226$02-OCT-24$04-OCT-24$Tekin, Murat$Due In
+$$227$KING$Stayover$OCC$DI$$$1$1$0$227$01-OCT-24$04-OCT-24$Chaudhryyasir, Saeed$Checked In
+$$228$DTWN$Stayover$OCC$DI$$$1$2$0$228$01-OCT-24$08-OCT-24$Doegar, Nikhil$Checked In
+$$229$DTWN$Stayover$OCC$DI$$$1$2$0$229$01-OCT-24$03-OCT-24$Guglielmo, Stefano$Checked In
+$0$230$DTWN$Departed, Arrival$VAC$DI$$$1$2$0$230$02-OCT-24$11-OCT-24$Kamal, Amber$Due In
+$$231$KING$Arrived$OCC$DI$$$1$1$0$231$02-OCT-24$04-OCT-24$Mehmet, Culum$Checked In
+$$232$GVTG$Stayover$OCC$DI$$$1$2$0$232$01-OCT-24$03-OCT-24$Yan, Li$Checked In
+$$233$KING$Stayover$OCC$DI$$$1$1$0$233$01-OCT-24$04-OCT-24$Alboqami, Fahad-Eid$Checked In
+$$234$GARD$Stayover$OCC$DI$$$1$2$0$234$01-OCT-24$05-OCT-24$Shekhawat, Neha$Checked In
+$$235$KING$Stayover$OCC$DI$$$1$1$0$235$29-SEP-24$03-OCT-24$Bakuradze, Nino$Checked In
+$$236$KING$Stayover$OCC$DI$$$1$1$0$236$01-OCT-24$05-OCT-24$Hoggett, Kerry-Anne$Checked In
+$1$237$KING$Arrival$VAC$IP$$$1$2$0$237$02-OCT-24$10-OCT-24$Dalloul, Noura$Due In
+$$238$GARD$Due Out$OCC$DI$$$1$2$0$238$28-SEP-24$02-OCT-24$Chanchanineetupuri, Tushar$Due Out
+$$239$KING$Stayover$OCC$DI$$$1$1$0$239$01-OCT-24$04-OCT-24$Alboqami, Fahad-Eid$Checked In
+$$240$GVTG$Stayover$OCC$DI$$$1$1$0$240$01-OCT-24$07-OCT-24$Hazan, Guy$Checked In
+$2$241$CCTY$Arrival$VAC$IP$$$1$3$0$241$02-OCT-24$03-OCT-24$Kumar, Rajgurulakshman$Due In
+$2$242$CCTY$Arrival$VAC$IP$$$1$1$0$242$02-OCT-24$04-OCT-24$Beyribey, Sinan$Due In
+$1$243$CCTY$Arrival$VAC$IP$$$1$1$0$243$02-OCT-24$04-OCT-24$Arslanoglu, Rozin$Due In
+$$244$KING$Stayover$OCC$DI$$$1$1$0$244$28-SEP-24$06-OCT-24$Ozcelik, Onur$Checked In
+$$245$KING$Stayover$OCC$DI$$$1$1$0$245$01-OCT-24$04-OCT-24$Alboqami, Fahad-Eid$Checked In
+$0$246$SRPM$Departed, Arrival$VAC$DI$$$1$3$0$246$02-OCT-24$05-OCT-24$Da-Conceicao-Faria-Mendes-Azevedomrs, Rodrigues-Maria$Due In
+$$247$SRPM$Due Out, Arrival$OCC$DI$$$2$3$0$247$30-SEP-24$02-OCT-24$Aggarwal, Vipin$Due Out
+$$247$SRPM$Due Out, Arrival$OCC$DI$$$2$1$0$247$02-OCT-24$05-OCT-24$Moskalenko, Alice$Due In
+$$248$SRPM$Arrived$OCC$DI$$$1$3$0$248$02-OCT-24$05-OCT-24$Demblani, Gitika$Checked In
+$$249$SRPM$Stayover$OCC$DI$$$1$3$0$249$01-OCT-24$03-OCT-24$Jindal, Vishal$Checked In
+$$250$SRPM$Due Out, Arrival$OCC$DI$$$2$2$0$250$27-SEP-24$02-OCT-24$Jain, Shrey$Due Out
+$$250$SRPM$Due Out, Arrival$OCC$DI$$$2$2$0$250$02-OCT-24$03-OCT-24$Akshit, Goel$Due In
+$$251$KING$Stayover$OCC$DI$$$1$1$0$251$01-OCT-24$04-OCT-24$Raza, Shah$Checked In
+$0$252$TWIN$Departed$VAC$DI$$$0
+$$253$SRPM$Stayover$OCC$DI$$$1$1$0$253$01-OCT-24$12-OCT-24$Ossman-Ehab, El-Sayed-Mohamed$Checked In
+$$301$JSTE$Stayover$OCC$DI$$$1$2$0$301$30-SEP-24$04-OCT-24$Alrashidi, Adel$Checked In
+$$302$KING$Stayover$OCC$DI$03-10-24$$1$1$0$302$30-SEP-24$03-OCT-24$Ziangirov, Iaroslav$Checked In
+$$303$AKIN$Arrived$OCC$DI$$$1$1$0$303$02-OCT-24$04-OCT-24$Oscar, Johnson$Checked In
+$$304$KING$Stayover$OCC$DI$$$1$2$0$304$01-OCT-24$05-OCT-24$Atin, Wahal$Checked In
+$$305$SRPM$Stayover$OCC$DI$$$1$3$0$305$01-OCT-24$05-OCT-24$Singh, Harigovind$Checked In
+$$306$SRPM$Stayover$OCC$DI$$$1$1$0$306$29-SEP-24$05-OCT-24$John, Stephan$Checked In
+$$307$TWIN$Stayover$OCC$DI$$$1$2$0$307$01-OCT-24$03-OCT-24$Pirverdieva, Ophelia$Checked In
+$$308$GVTG$Stayover$OCC$DI$$$1$2$0$308$28-SEP-24$03-OCT-24$Zaneta, Tsianta$Checked In
+$$309$KING$Stayover$OCC$DI$$$1$2$0$309$29-SEP-24$05-OCT-24$Prakash, Veena$Checked In
+$0$310$KING$Departed, Arrival$VAC$DI$$$1$2$0$310$02-OCT-24$05-OCT-24$Sapankaya, Melis$Due In
+$$311$KING$Stayover$OCC$DI$$$1$2$0$311$29-SEP-24$05-OCT-24$Raghavendra, Sanjana$Checked In
+$$312$GARD$Stayover$OCC$DI$$$1$2$0$312$29-SEP-24$03-OCT-24$Surana, Aditya$Checked In
+$0$313$KING$Departed, Arrival$VAC$DI$$$1$2$0$313$02-OCT-24$05-OCT-24$De-Oliveiramrs, Vaz-Isabel$Due In
+$3$314$GARD$Not Reserved$VAC$IP$$$0
+$$315$KING$Arrived$OCC$IP$$$1$1$0$315$02-OCT-24$03-OCT-24$De-Ruyck, Johan-Antoine-R$Checked In
+$$316$GVTG$Stayover$OCC$DI$$$1$2$0$316$01-OCT-24$06-OCT-24$Nagpal, Vipul$Checked In
+$2$317$KING$Arrival$VAC$IP$$$1$2$0$317$02-OCT-24$05-OCT-24$Aleksandrova, Irina$Due In
+$1$318$GVTG$Arrival$VAC$IP$$$1$2$0$318$02-OCT-24$03-OCT-24$Alatawi, Muhannad$Due In
+$$319$KING$Stayover$OCC$DI$$$1$2$0$319$28-SEP-24$03-OCT-24$Kuchkarov, Abdusalam$Checked In
+$$320$GARD$Stayover$OCC$DI$$$1$1$0$320$01-OCT-24$05-OCT-24$Waheed, Afrah$Checked In
+$$321$KING$Stayover$OCC$DI$$$1$1$0$321$30-SEP-24$03-OCT-24$Demir, Serdar$Checked In
+$$322$GARD$Due Out, Arrival$OCC$DI$$$2$3$0$322$30-SEP-24$02-OCT-24$Basyouni, Mohamed$Due Out
+$$322$GARD$Due Out, Arrival$OCC$DI$$$2$2$0$322$02-OCT-24$09-OCT-24$Jalil, Saad$Due In
+$0$323$KING$Departed, Arrival$VAC$DI$$$1$2$0$323$02-OCT-24$05-OCT-24$De-Bastos-Florencio-Sobral-Damrs, Silva-Maria$Due In
+$$324$GVTG$Stayover$OCC$DI$$$1$1$0$324$01-OCT-24$07-OCT-24$Yan, Gao$Checked In
+$$325$KING$Stayover$OCC$DI$$$1$1$0$325$01-OCT-24$04-OCT-24$Adnanahmed, Khan$Checked In
+$$326$GARD$Stayover$OCC$DI$$$1$1$0$326$01-OCT-24$12-OCT-24$Hasser, Amanda$Checked In
+$0$327$KING$Departed, Arrival$VAC$DI$$$1$1$0$327$02-OCT-24$05-OCT-24$Americo-Da-Silvamr, Guedes-Jose$Due In
+$$328$CCTY$Due Out$OCC$DI$$$1$2$0$328$28-SEP-24$02-OCT-24$Taparia, Sanjay$Due Out
+$$329$DTWN$Stayover$OCC$DI$$$1$2$0$329$01-OCT-24$07-OCT-24$Yi, Zhou$Checked In
+$$330$CCTY$Stayover$OCC$DI$$$1$1$0$330$01-OCT-24$06-OCT-24$Kacan, Nihat$Checked In
+$2$331$DTWN$Not Reserved$VAC$IP$$$0
+$$332$CCTY$Stayover$OCC$DI$$$1$1$0$332$30-SEP-24$04-OCT-24$Karabiyik, Akif$Checked In
+$$333$GVTG$Stayover$OCC$DI$$$1$2$0$333$29-SEP-24$05-OCT-24$Takata, Hiroyuki$Checked In
+$$334$TWIN$Due Out, Arrival$OCC$DI$$$2$1$0$334$29-SEP-24$02-OCT-24$Batir, Ridvan$Due Out
+$$334$TWIN$Due Out, Arrival$OCC$DI$$$2$2$0$334$02-OCT-24$05-OCT-24$Saini, Renuka$Due In
+$0$335$KING$Departed, Arrival$VAC$DI$$$1$1$0$335$02-OCT-24$04-OCT-24$Alhosani, Khamis-Matar$Due In
+$$336$KING$Stayover$OCC$DI$$$1$2$0$336$01-OCT-24$05-OCT-24$Singh, Kanwaljit$Checked In
+$$337$KING$Stayover$OCC$DI$$$1$1$0$337$01-OCT-24$04-OCT-24$Muhammad, Kashif$Checked In
+$$338$GARD$Stayover$OCC$DI$$$1$2$0$338$29-SEP-24$04-OCT-24$Kochumon, Aparna$Checked In
+$$339$KING$Stayover$OCC$IP$$$1$1$0$339$01-OCT-24$04-OCT-24$Muhammad, Ashfaq$Checked In
+$$340$GARD$Stayover$OCC$DI$$$1$2$0$340$01-OCT-24$04-OCT-24$Alhajri, Sultan$Checked In
+$$341$KING$Stayover$OCC$DI$$$1$2$0$341$29-SEP-24$03-OCT-24$Sultanov, Aziz$Checked In
+$$342$GVTG$Stayover$OCC$DI$$$1$2$0$342$01-OCT-24$07-OCT-24$Xiang, Ge$Checked In
+$$343$KING$Stayover$OCC$DI$$$1$2$0$343$29-SEP-24$03-OCT-24$Jethwani, Amit$Checked In
+$$344$GVTG$Stayover$OCC$DI$$$1$1$0$344$01-OCT-24$07-OCT-24$Jianjun, Zhou$Checked In
+$$345$KING$Stayover$OCC$DI$$$1$1$0$345$01-OCT-24$04-OCT-24$Muhammad, Amir$Checked In
+$$346$GARD$Stayover$OCC$DI$$$1$2$0$346$30-SEP-24$07-OCT-24$Binzaiman, Nadeem$Checked In
+$$347$KING$Stayover$OCC$DI$$$1$2$0$347$01-OCT-24$04-OCT-24$Hekimoglu, Havvajale$Checked In
+$$348$KING$Stayover$OCC$DI$$$1$1$0$348$26-SEP-24$04-OCT-24$Maximova, Alexandra$Checked In
+$$349$KING$Stayover$OCC$DI$$$1$1$0$349$01-OCT-24$04-OCT-24$Muhammad, Mansha$Checked In
+$5$350$GARD$Not Reserved$VAC$IP$$$0
+$$351$GVTG$Stayover$OCC$DI$$$1$1$0$351$01-OCT-24$04-OCT-24$Jianbing, Geng$Checked In
+$$352$CCTY$Stayover$OCC$DI$$$1$3$0$352$29-SEP-24$03-OCT-24$Shah, Karan$Checked In
+$$353$CCTY$Stayover$OCC$DI$$$1$2$0$353$01-OCT-24$04-OCT-24$Keskinoglu, Dicle$Checked In
+$$354$CCTY$Stayover$OCC$DI$$$1$2$0$354$29-SEP-24$03-OCT-24$Shah, Karan$Checked In
+$$355$TWIN$Stayover$OCC$DI$$$1$2$0$355$01-OCT-24$03-OCT-24$Jabbarov, Elshan$Checked In
+$0$356$KING$Departed, Arrival$VAC$DI$$$1$1$0$356$02-OCT-24$04-OCT-24$Al-Alawi, Khalifa$Due In
+$$357$TWIN$Stayover$OCC$DI$$$1$2$0$357$01-OCT-24$06-OCT-24$Asri, Tripti$Checked In
+$0$358$KING$Departed, Arrival$VAC$IP$$$1$1$0$358$02-OCT-24$04-OCT-24$Al-Alawi, Khalifa$Due In
+$$359$DTWN$Stayover$OCC$DI$$$1$3$0$359$29-SEP-24$03-OCT-24$Magrupova, Nargizakhon$Checked In
+$$360$TWIN$Stayover$OCC$DI$$$1$1$0$360$18-SEP-24$09-OCT-24$Pillaiah, Tejas$Checked In
+$$361$TWIN$Stayover$OCC$DI$$$1$2$0$361$01-OCT-24$06-OCT-24$Asri, Tripti$Checked In
+$1$362$KING$Arrival$VAC$IP$$$1$2$0$362$02-OCT-24$05-OCT-24$Maria-Marquesmrs, Ramalhete-Ana$Due In
+$$363$TWIN$Due Out$OCC$DI$$$1$2$0$363$29-SEP-24$02-OCT-24$CHadra, Rajiv$Due Out
+$$364$SRPM$Due Out, Arrival$OCC$DI$$$2$2$0$364$27-SEP-24$02-OCT-24$Jain, Vipul$Due Out
+$$364$SRPM$Due Out, Arrival$OCC$DI$$$2$1$0$364$02-OCT-24$05-OCT-24$Alaqeeli, Naser$Due In
+$$401$JSTE$Stayover$OCC$DI$$$1$2$0$401$01-OCT-24$05-OCT-24$Vemparala, Sashank$Checked In
+$$402$KING$Arrived$OCC$DI$$$1$1$0$402$02-OCT-24$13-OCT-24$Issabayev, Nursultan$Checked In
+$$403$AKIN$Stayover$OCC$DI$$$1$1$0$403$01-OCT-24$04-OCT-24$Syedmohammedshariqabbas, Jafferi$Checked In
+$0$404$GARD$Departed, Arrival$VAC$DI$$$1$1$0$404$02-OCT-24$05-OCT-24$King, Gary$Due In
+$$405$SRPM$Stayover$OCC$DI$$$1$2$0$405$25-SEP-24$08-OCT-24$Tahirov, Ruslan$Checked In
+$$406$SRPM$Stayover$OCC$DI$$$1$1$0$406$29-SEP-24$04-OCT-24$Hayward, Michael Neil$Checked In
+$$407$TWIN$Stayover$OCC$DI$$$1$2$0$407$29-SEP-24$03-OCT-24$Alsaygh, Thamer$Checked In
+$4$408$TWIN$Not Reserved$VAC$DI$$$0
+$$409$KING$Stayover$OCC$DI$$$1$1$0$409$01-OCT-24$05-OCT-24$Jones, Judith-Ann$Checked In
+$1$410$KING$Not Reserved$VAC$OS$$$0
+$$411$KING$Stayover$OCC$DI$$$1$2$0$411$01-OCT-24$08-OCT-24$Arora, Anubhav$Checked In
+$3$412$GARD$Not Reserved$VAC$OS$$$0
+$$413$KING$Due Out, Arrival$OCC$DI$$$2$2$0$413$27-SEP-24$02-OCT-24$Jain, Chhaya$Due Out
+$$413$KING$Due Out, Arrival$OCC$DI$$$2$2$0$413$02-OCT-24$05-OCT-24$Maria-Falcao-De-Berredomrs, Correia-Luisa$Due In
+$$414$GVTG$Stayover$OCC$DI$$$1$2$0$414$01-OCT-24$05-OCT-24$Vemparala, Sashank$Checked In
+$$415$KING$Stayover$OCC$DI$$$1$1$0$415$01-OCT-24$04-OCT-24$Kaleem, Sarwar$Checked In
+$$416$GARD$Due Out$OCC$OS$$$1$2$0$416$27-SEP-24$02-OCT-24$Jain, Nanu$Due Out
+$$417$KING$Due Out, Arrival$OCC$DI$$$2$2$0$417$27-SEP-24$02-OCT-24$Jain, Devanshi$Due Out
+$$417$KING$Due Out, Arrival$OCC$DI$$$2$2$0$417$02-OCT-24$11-OCT-24$Gupta, Amitomprakash$Due In
+$$418$GVTG$Stayover$OCC$DI$$$1$1$0$418$01-OCT-24$03-OCT-24$Chen, Zhang$Checked In
+$0$419$KING$Departed, Arrival$VAC$DI$$$1$1$0$419$02-OCT-24$05-OCT-24$Carla-Alves-Alves-Silvamrs, Costa-Patricia$Due In
+$1$420$GARD$Not Reserved$VAC$IP$$$0
+$1$421$KING$Arrival$VAC$IP$$$1$2$0$421$02-OCT-24$06-OCT-24$Hingad, Prashant$Due In
+$$422$KING$Stayover$OCC$DI$$$1$2$0$422$28-SEP-24$03-OCT-24$Gupta, Praveen$Checked In
+$$423$KING$Stayover$OCC$DI$$$1$1$0$423$01-OCT-24$03-OCT-24$Leonidovich, Stoqney Anatoliy$Checked In
+$$424$GVTG$Stayover$OCC$DI$$$1$2$0$424$01-OCT-24$03-OCT-24$Jialu, Zhang$Checked In
+$$425$KING$Stayover$OCC$DI$$$1$1$0$425$30-SEP-24$04-OCT-24$Davydov, Andrey$Checked In
+$1$426$KING$Arrival$VAC$DI$$$1$2$0$426$02-OCT-24$06-OCT-24$Hingad, Prashant$Due In
+$$427$KING$Stayover$OCC$DI$$$1$2$0$427$30-SEP-24$03-OCT-24$Komarla, Keertanayogendra$Checked In
+$$428$CCTY$Stayover$OCC$DI$$$1$1$0$428$16-SEP-24$05-OCT-24$Anazco, Yasvet$Checked In
+$$429$DTWN$Stayover$OCC$DI$$$1$2$0$429$01-OCT-24$03-OCT-24$Aliosmanov, Ogtay$Checked In
+$$430$CCTY$Due Out$OCC$DI$$$1$2$0$430$27-SEP-24$02-OCT-24$Damani, Shivkumar$Due Out
+$4$431$DTWN$Not Reserved$VAC$IP$$$0
+$$432$CCTY$Stayover$OCC$DI$$$1$1$0$432$01-OCT-24$05-OCT-24$Kryvoguz, Ganna$Checked In
+$2$433$TWIN$Arrival$VAC$IP$$$1$2$0$433$02-OCT-24$03-OCT-24$Alqarni, Mohammed$Due In
+$$434$TWIN$Stayover$OCC$DI$$$1$2$0$434$01-OCT-24$05-OCT-24$Carr, William-Michael$Checked In
+$$435$KING$Stayover$OCC$DI$$$1$2$0$435$30-SEP-24$03-OCT-24$Komarla, Aditiyogendra$Checked In
+$$436$KING$Stayover$OCC$DI$$$1$2$0$436$30-SEP-24$03-OCT-24$Naveenkumarkota, Srivalli$Checked In
+$$437$KING$Stayover$OCC$DI$$$1$1$0$437$01-OCT-24$04-OCT-24$Sheikhmuhammaadshahid, Haque$Checked In
+$1$438$KING$Arrival$VAC$IP$$$1$2$0$438$02-OCT-24$06-OCT-24$Hingad, Prashant$Due In
+$$439$KING$Stayover$OCC$DI$$$1$1$0$439$28-SEP-24$03-OCT-24$Malhotra, Amartya$Checked In
+$1$440$KING$Arrival$VAC$DI$$$1$2$0$440$02-OCT-24$06-OCT-24$Hingad, Prashant$Due In
+$$441$KING$Stayover$OCC$DI$$$1$2$0$441$28-SEP-24$03-OCT-24$Malhotra, Vishal$Checked In
+$0$442$GVTG$Departed$VAC$DI$$$0
+$$443$KING$Stayover$OCC$DI$$$1$1$0$443$01-OCT-24$03-OCT-24$Marsovich, Fayzullin Eduard$Checked In
+$$444$TWIN$Stayover$OCC$DI$$$1$2$0$444$01-OCT-24$04-OCT-24$Asif, Ijaz$Checked In
+$$445$KING$Stayover$OCC$DI$$$1$2$0$445$01-OCT-24$05-OCT-24$Arora, Jasleen$Checked In
+$0$446$KING$Departed, Arrival$VAC$IP$$$1$2$0$446$02-OCT-24$06-OCT-24$Hingad, Prashant$Due In
+$$447$KING$Stayover$OCC$DI$$$1$1$0$447$01-OCT-24$05-OCT-24$Atin, Wahal$Checked In
+$0$448$KING$Departed, Arrival$VAC$DI$$$1$1$0$448$02-OCT-24$06-OCT-24$Alzahrani, Ibrahem-Hassan-I$Due In
+$$449$KING$Arrived$OCC$DI$$$1$1$0$449$02-OCT-24$04-OCT-24$Fredrik, Klyver$Checked In
+$$450$KING$Stayover$OCC$DI$$$1$2$0$450$30-SEP-24$03-OCT-24$Kota, Naveenkumar$Checked In
+$$451$GVTG$Stayover$OCC$DI$$$1$2$0$451$01-OCT-24$03-OCT-24$Yanling, Xia$Checked In
+$$452$CCTY$Stayover$OCC$DI$$$1$2$0$452$01-OCT-24$06-OCT-24$Kaya, Berna$Checked In
+$$453$CCTY$Stayover$OCC$DI$$$1$2$0$453$01-OCT-24$06-OCT-24$Marangoz, Esra$Checked In
+$$454$CCTY$Stayover$OCC$DI$$$1$2$0$454$01-OCT-24$06-OCT-24$Erdogan, Tahsin$Checked In
+$$455$TWIN$Due Out, Arrival$OCC$DI$$$2$2$0$455$27-SEP-24$02-OCT-24$Tivary, Mayank$Due Out
+$$455$TWIN$Due Out, Arrival$OCC$DI$$$2$2$0$455$02-OCT-24$05-OCT-24$Bolshakova, Natalia$Due In
+$1$456$KING$Arrival$VAC$IP$$$1$2$0$456$02-OCT-24$05-OCT-24$Augusto-De-Amorim-Vieiramr, Santos-Artur$Due In
+$$457$TWIN$Stayover$OCC$DI$$$1$1$0$457$01-OCT-24$05-OCT-24$Zarutskiy, Pavel$Checked In
+$$458$KING$Stayover$OCC$DI$$$1$1$0$458$20-SEP-24$06-OCT-24$Salyanci, Selim$Checked In
+$$459$DTWN$Stayover$OCC$DI$$$1$1$0$459$29-SEP-24$12-OCT-24$Chiacchio, Davide$Checked In
+$$460$TWIN$Due Out$OCC$DI$$$1$2$0$460$27-SEP-24$02-OCT-24$Girish, Megha$Due Out
+$$461$TWIN$Stayover$OCC$DI$$$1$2$0$461$30-SEP-24$04-OCT-24$Balbutsky, Nicolai$Checked In
+$0$462$KING$Departed, Arrival$VAC$DI$$$1$2$0$462$02-OCT-24$04-OCT-24$Aggarwal, Vrinda$Due In
+$$463$TWIN$Stayover$OCC$DI$$$1$2$0$463$01-OCT-24$05-OCT-24$Mckenzie, Bill-Bradley$Checked In
+$$464$SRPM$Stayover$OCC$DI$$$1$1$0$464$01-OCT-24$04-OCT-24$Trotsenko, Ievgen$Checked In
+$$501$JSTE$Stayover$OCC$DI$$$1$3$0$501$01-OCT-24$05-OCT-24$Otarbayev, Malik$Checked In
+$$502$GARD$Stayover$OCC$DI$$$1$1$0$502$29-SEP-24$06-OCT-24$Alnahas, Mohammed$Checked In
+$$503$AKIN$Stayover$OCC$DI$$$1$1$0$503$01-OCT-24$04-OCT-24$Shahid, Noor$Checked In
+$$504$KING$Stayover$OCC$DI$$$1$2$0$504$29-SEP-24$10-OCT-24$Peters-Stanley, Molly$Checked In
+$$505$CITY$Stayover$OCC$DI$$$1$1$0$505$01-OCT-24$05-OCT-24$Rakestraw, Andrew$Checked In
+$$506$SRPM$Stayover$OCC$DI$$$1$1$0$506$25-SEP-24$08-OCT-24$Yakoubov, Nana$Checked In
+$$507$TWIN$Stayover$OCC$DI$$$1$2$0$507$01-OCT-24$06-OCT-24$Patryk, Sowa$Checked In
+$$508$TWIN$Stayover$OCC$CL$$$1$1$0$508$29-SEP-24$05-OCT-24$Perozzo, Rino$Checked In
+$$509$KING$Stayover$OCC$DI$04-10-24$$1$2$0$509$30-SEP-24$03-OCT-24$Sawant, Neha$Checked In
+$$510$KING$Stayover$OCC$DI$$$1$2$0$510$01-OCT-24$04-OCT-24$Geevarghese, Ajay$Checked In
+$$511$KING$Stayover$OCC$DI$$$1$2$0$511$30-SEP-24$03-OCT-24$Harikumar, Sindhu$Checked In
+$$512$KING$Stayover$OCC$CL$$$1$1$0$512$30-SEP-24$16-OCT-24$Seyidov, Arif$Checked In
+$$513$KING$Stayover$OCC$DI$$$1$1$0$513$01-OCT-24$04-OCT-24$Michael, Fabbri$Checked In
+$3$514$GARD$Not Reserved$VAC$IP$$$0
+$$515$KING$Stayover$OCC$DI$$$1$2$0$515$30-SEP-24$03-OCT-24$Kota, Vigneshharikumar$Checked In
+$0$516$GVTG$Departed$VAC$DI$$$0
+$$517$KING$Stayover$OCC$DI$$$1$1$0$517$01-OCT-24$04-OCT-24$Naeem, Wakaas$Checked In
+$0$518$GVTG$Departed$VAC$DI$$$0
+$$519$KING$Stayover$OCC$DI$$$1$1$0$519$01-OCT-24$04-OCT-24$Amaanullah, Babar$Checked In
+$0$520$GARD$Departed$VAC$DI$$$0
+$1$521$KING$Arrival$VAC$IP$$$1$2$0$521$02-OCT-24$06-OCT-24$Barlasyilmaz, Pinar$Due In
+$$522$GARD$Stayover$OCC$DI$$$1$2$0$522$28-SEP-24$04-OCT-24$Bedrina, Elena$Checked In
+$$523$KING$Stayover$OCC$DI$$$1$2$0$523$30-SEP-24$06-OCT-24$Chopra, Nipun$Checked In
+$$524$GVTG$Stayover$OCC$DI$$$1$2$0$524$29-SEP-24$05-OCT-24$Nawazpasha, Naser$Checked In
+$$525$KING$Stayover$OCC$DI$$$1$1$0$525$01-OCT-24$05-OCT-24$Zaremba, Barry-Eugene$Checked In
+$2$526$GARD$Not Reserved$VAC$IP$$$0
+$$527$KING$Stayover$OCC$DI$$$1$2$0$527$01-OCT-24$05-OCT-24$Sharma, Amit-Bhushan$Checked In
+$$528$CCTY$Stayover$OCC$DI$$$1$2$0$528$01-OCT-24$03-OCT-24$Taher, Bassel$Checked In
+$5$529$DTWN$Not Reserved$VAC$IP$$$0
+$3$530$CCTY$Arrival$VAC$IP$$$1$1$0$530$02-OCT-24$05-OCT-24$Yoshizawa, Makoto$Due In
+$0$531$DTWN$Departed$VAC$DI$$$0
+$$532$CCTY$Stayover$OCC$DI$$$1$2$0$532$01-OCT-24$03-OCT-24$Tahher, BAssel$Checked In
+$$533$GVTG$Due Out, Arrival$OCC$DI$$$3$1$0$533$01-OCT-24$02-OCT-24$*Pagar, Aben$Due Out
+$$533$GVTG$Due Out, Arrival$OCC$DI$$$3$1$0$533$01-OCT-24$02-OCT-24$*Fernandes, Shaun$Due Out
+$$533$GVTG$Due Out, Arrival$OCC$DI$$$3$2$0$533$02-OCT-24$09-OCT-24$Korber, Ladislav$Due In
+$$534$GVTG$Stayover$OCC$DI$$$1$2$0$534$01-OCT-24$03-OCT-24$Zheng, Wang$Checked In
+$$535$KING$Stayover$OCC$DI$$$1$1$0$535$30-SEP-24$03-OCT-24$Sukovatiy, Anton$Checked In
+$$536$KING$Stayover$OCC$DI$$$1$2$0$536$30-SEP-24$03-OCT-24$Saenko, Evgenii$Checked In
+$$537$KING$Stayover$OCC$DI$$$1$2$0$537$30-SEP-24$06-OCT-24$Jain, Pulkit$Checked In
+$0$538$KING$Departed, Arrival$VAC$DI$$$1$1$0$538$02-OCT-24$04-OCT-24$Marco, Di-Bello$Due In
+$0$539$KING$Departed, Arrival$VAC$DI$$$1$1$0$539$02-OCT-24$04-OCT-24$Shimshek, Jafar$Due In
+$$540$GARD$Stayover$OCC$DI$$$1$2$0$540$01-OCT-24$06-OCT-24$Mishra, Pratichi$Checked In
+$1$541$KING$Arrival$VAC$IP$$$1$2$0$541$02-OCT-24$05-OCT-24$Maria-Ribeiro-Da, Dias-Isabel$Due In
+$$542$TWIN$Stayover$OCC$DI$$$1$2$0$542$01-OCT-24$03-OCT-24$Guliyev, Shahlar$Checked In
+$1$543$KING$Arrival$VAC$IP$$$1$2$0$543$02-OCT-24$05-OCT-24$Capaci, Tulay$Due In
+$1$544$GVTG$Not Reserved$VAC$IP$$$0
+$$545$KING$Due Out, Arrival$OCC$DI$$$2$2$0$545$27-SEP-24$02-OCT-24$Nawani, Anilkumar$Due Out
+$$545$KING$Due Out, Arrival$OCC$DI$$$2$2$0$545$02-OCT-24$05-OCT-24$Masani, Firdaus$Due In
+$1$546$KING$Arrival$VAC$IP$$$1$2$0$546$02-OCT-24$05-OCT-24$Antonia-Moura-Jorge-Amzalak-Dosmrs, Santos-Maria$Due In
+$$547$KING$Stayover$OCC$DI$$$1$2$0$547$01-OCT-24$04-OCT-24$Amir, Sohail$Checked In
+$$548$GARD$Stayover$OCC$DI$$$1$2$0$548$01-OCT-24$05-OCT-24$Sharma, Dharam-Bhushan$Checked In
+$$549$KING$Stayover$OCC$DI$$$1$2$0$549$27-SEP-24$03-OCT-24$Nahar, Anilkumar$Checked In
+$$550$GARD$Stayover$OCC$DI$$$1$2$0$550$29-SEP-24$05-OCT-24$Sharma, Neha$Checked In
+$2$551$GVTG$Not Reserved$VAC$IP$$$0
+$1$552$CCTY$Arrival$VAC$IP$$$1$1$0$552$02-OCT-24$05-OCT-24$Kono, Ryo$Due In
+$4$553$CCTY$Not Reserved$VAC$IP$$$0
+$$554$CCTY$Stayover$OCC$DI$$$1$2$0$554$01-OCT-24$06-OCT-24$Arora, Anubhav$Checked In
+$$555$TWIN$Stayover$OCC$DI$$$1$2$0$555$01-OCT-24$03-OCT-24$Mammadov, Idris$Checked In
+$$556$KING$Stayover$OCC$DI$$$1$2$0$556$01-OCT-24$10-OCT-24$Kuteyko, Ekaterina$Checked In
+$$557$TWIN$Due Out, Arrival$OCC$DI$$$2$1$0$557$30-SEP-24$02-OCT-24$Cimen, Mehmetakin$Due Out
+$$557$TWIN$Due Out, Arrival$OCC$DI$$$2$2$0$557$02-OCT-24$03-OCT-24$Kothekar, Archana$Due In
+$$558$KING$Stayover$OCC$DI$$$1$1$0$558$29-SEP-24$08-OCT-24$Ragimov, Shayla$Checked In
+$3$559$DTWN$Arrival$VAC$IP$$$1$2$0$559$02-OCT-24$08-OCT-24$Loran, Anastasiya$Due In
+$$560$TWIN$Due Out, Arrival$OCC$DI$$$2$2$0$560$27-SEP-24$02-OCT-24$Navani, Sangeetanahar$Due Out
+$$560$TWIN$Due Out, Arrival$OCC$DI$$$2$2$0$560$02-OCT-24$04-OCT-24$Al-Alawi, Khalifa$Due In
+$0$561$TWIN$Departed, Arrival$VAC$DI$$$1$2$0$561$02-OCT-24$04-OCT-24$Khanna, Nipun$Due In
+$$562$KING$Due Out, Arrival$OCC$DI$$$2$2$0$562$27-SEP-24$02-OCT-24$Sachar, Nikash$Due Out
+$$562$KING$Due Out, Arrival$OCC$DI$$$2$2$0$562$02-OCT-24$06-OCT-24$Poddar, Bhupesh$Due In
+$$563$KING$Stayover$OCC$DI$$$1$2$0$563$30-SEP-24$06-OCT-24$Dhoot, Varun$Checked In
+$0$564$SRPM$Departed$VAC$DI$$$0
+$1$601$JSTE$Not Reserved$VAC$OS$$$0
+$$602$GARD$Stayover$OCC$DI$$$1$2$0$602$01-OCT-24$06-OCT-24$Kayabicer, Elcil$Checked In
+$$603$AKIN$Stayover$OCC$DI$$$1$1$0$603$01-OCT-24$04-OCT-24$Muhammadwaqas, Akram$Checked In
+$$604$KING$Stayover$OCC$DI$$$1$2$0$604$01-OCT-24$05-OCT-24$Dutt, Rajat$Checked In
+$1$605$CITY$Not Reserved$VAC$DI$05-10-24$$0
+$1$606$CITY$Not Reserved$VAC$DI$$$0
+$$607$GVTG$Stayover$OCC$DI$$$1$2$0$607$01-OCT-24$08-OCT-24$Alawadhi, Najeeb$Checked In
+$$608$QUEN$Stayover$OCC$DI$$$1$2$0$608$30-SEP-24$03-OCT-24$Mozharov, Ivan$Checked In
+$2$609$KING$Not Reserved$VAC$OS$$$0
+$$610$QUEN$Stayover$OCC$DI$$$1$1$0$610$01-OCT-24$03-OCT-24$Alameeri, Abdullah$Checked In
+$$611$KING$Stayover$OCC$DI$$$1$2$0$611$01-OCT-24$06-OCT-24$Khatri, Subhash$Checked In
+$$612$QUEN$Stayover$OCC$DI$$$1$2$0$612$01-OCT-24$03-OCT-24$Alenezi, Mohammed$Checked In
+$4$613$KING$Arrival$VAC$IP$$$1$2$0$613$02-OCT-24$05-OCT-24$Miguel-Bastosmr, Amorim-Ricardo$Due In
+$$614$QUEN$Stayover$OCC$DI$$$1$3$0$614$01-OCT-24$07-OCT-24$Kumar, Rajesh$Checked In
+$2$615$KING$Arrival$VAC$IP$$$1$2$0$615$02-OCT-24$04-OCT-24$Jain, Rohan$Due In
+$0$616$QUEN$Departed, Arrival$VAC$DI$$$1$1$0$616$02-OCT-24$05-OCT-24$Alhargan, Abdulaziz$Due In
+$0$617$KING$Departed, Arrival$VAC$DI$$$1$1$0$617$02-OCT-24$05-OCT-24$De-Abreu-Raposo-Demrs, Magalhaes-Miguel$Due In
+$$618$QUEN$Stayover$OCC$CL$$$1$2$0$618$01-OCT-24$03-OCT-24$Alenezi, Othman$Checked In
+$$619$TWIN$Due Out$OCC$DI$$$1$2$0$619$28-SEP-24$02-OCT-24$Pal, Kailash$Due Out
+$$620$CCTY$Due Out$OCC$DI$$$1$3$0$620$19-SEP-24$02-OCT-24$Rybalka, Alexey$Due Out
+$$621$KING$Stayover$OCC$DI$$$1$1$0$621$30-SEP-24$04-OCT-24$Markin, Nicolai$Checked In
+$$622$CCTY$Stayover$OCC$DI$$$1$1$0$622$01-OCT-24$06-OCT-24$Mova, Liudmyla$Checked In
+$$623$TWIN$Stayover$OCC$CL$$$1$2$0$623$01-OCT-24$03-OCT-24$Hashimov, Mikhail$Checked In
+$0$624$CCTY$Departed$VAC$DI$$$0
+$1$625$KING$Arrival$VAC$DI$$$1$1$0$625$02-OCT-24$08-OCT-24$Alves, Luis$Due In
+$$626$KING$Stayover$OCC$CL$$$1$1$0$626$29-SEP-24$03-OCT-24$Korol, Andrii$Checked In
+$$627$DTWN$Stayover$OCC$DI$$$1$1$0$627$26-SEP-24$05-OCT-24$Unal, Mert$Checked In
+$2$628$DTWN$Not Reserved$VAC$IP$03-10-24$$0
+$$629$KING$Stayover$OCC$DI$$$1$2$0$629$30-SEP-24$03-OCT-24$Somani, Ashok Kumar$Checked In
+$$630$GVTG$Stayover$OCC$DI$$$1$2$0$630$30-SEP-24$10-OCT-24$Mirzatagi, Sevinj$Checked In
+$$631$KING$Due Out, Arrival$OCC$DI$$$2$2$0$631$28-SEP-24$02-OCT-24$Pal, Kailash$Due Out
+$$631$KING$Due Out, Arrival$OCC$DI$$$2$1$0$631$02-OCT-24$05-OCT-24$Strelkova, Svetlana$Due In
+$$632$QUEN$Stayover$OCC$DI$$$1$1$0$632$01-OCT-24$04-OCT-24$Bukhari, Syed$Checked In
+$$633$KING$Stayover$OCC$DI$$$1$2$0$633$30-SEP-24$03-OCT-24$Somani, Ashok Kumar$Checked In
+$$634$QUEN$Stayover$OCC$DI$$$1$1$0$634$29-SEP-24$04-OCT-24$Bilodid, Daria$Checked In
+$0$635$KING$Departed, Arrival$VAC$DI$$$1$1$0$635$02-OCT-24$05-OCT-24$De-Gois-Demrs-Demrs, Carvalho-Susana$Due In
+$$636$QUEN$Stayover$OCC$DI$$$1$2$0$636$01-OCT-24$03-OCT-24$Alenezi, Othman$Checked In
+$$637$TWIN$Stayover$OCC$CL$$$1$2$0$637$01-OCT-24$03-OCT-24$Khibabaev, Rashad$Checked In
+$$638$QUEN$Due Out$OCC$DI$$$1$1$0$638$01-OCT-24$02-OCT-24$Rahim, Amir$Due Out
+$$639$KING$Stayover$OCC$CL$$$1$1$0$639$29-SEP-24$03-OCT-24$Smolak-Koch, Elke$Checked In
+$$640$QUEN$Stayover$OCC$DI$$$1$2$0$640$01-OCT-24$03-OCT-24$Asif, Iqbal$Checked In
+$$641$TWIN$Due Out, Arrival$OCC$DI$$$2$2$0$641$28-SEP-24$02-OCT-24$Kakkar, Mohinder$Due Out
+$$641$TWIN$Due Out, Arrival$OCC$DI$$$2$2$0$641$02-OCT-24$06-OCT-24$Golubev, Sergei$Due In
+$2$642$QUEN$Not Reserved$VAC$OS$$$0
+$$643$KING$Stayover$OCC$DI$$$1$1$0$643$01-OCT-24$04-OCT-24$Abdul, Sattar$Checked In
+$$644$CCTY$Due Out$OCC$DI$$$1$3$0$644$27-SEP-24$02-OCT-24$Jain, Twinkle$Due Out
+$$645$CCTY$Due Out$OCC$DI$$$1$2$0$645$27-SEP-24$02-OCT-24$Jain, Sandeep$Due Out
+$$646$CCTY$Stayover$OCC$DI$$$1$2$0$646$28-SEP-24$06-OCT-24$Baylina, Ignacio$Checked In
+$$647$TWIN$Due Out, Arrival$OCC$DI$$$2$2$0$647$28-SEP-24$02-OCT-24$Kakkar, Mohinder$Due Out
+$$647$TWIN$Due Out, Arrival$OCC$DI$$$2$2$0$647$02-OCT-24$06-OCT-24$Averina, Svetlana$Due In
+$0$648$KING$Departed, Arrival$VAC$DI$$$1$2$0$648$02-OCT-24$05-OCT-24$Dadachanji, Behram$Due In
+$0$649$TWIN$Departed, Arrival$VAC$DI$$$1$2$0$649$02-OCT-24$06-OCT-24$Fefilov, Vladimir$Due In
+$$650$KING$Stayover$OCC$DI$$$1$2$0$650$30-SEP-24$07-OCT-24$Fakhroo, Mohamed$Checked In
+$$651$DTWN$Due Out, Arrival$OCC$DI$$$2$1$0$651$01-OCT-24$02-OCT-24$Kostiushkin, Denis$Due Out
+$$651$DTWN$Due Out, Arrival$OCC$DI$$$2$1$0$651$02-OCT-24$03-OCT-24$Alghamdi, Abdulrahman$Due In
+$$652$TWIN$Stayover$OCC$DI$$$1$2$0$652$28-SEP-24$04-OCT-24$Maier, Elisaveta$Checked In
+$$653$TWIN$Stayover$OCC$DI$$$1$1$0$653$01-OCT-24$05-OCT-24$Perozzo, Paolo$Checked In
+$$654$KING$Stayover$OCC$DI$$$1$1$0$654$30-SEP-24$03-OCT-24$Bychkov, Anton$Checked In
+$$655$TWIN$Stayover$OCC$DI$$$1$1$0$655$29-SEP-24$03-OCT-24$Zverev, Igor$Checked In
+$$656$SRPM$Stayover$OCC$DI$$$1$1$0$656$27-SEP-24$05-OCT-24$Veldink, Roel$Checked In
+$$701$JSTE$Stayover$OCC$DI$$$1$1$0$701$30-SEP-24$03-OCT-24$Kim, Kwang Se$Checked In
+$0$702$GARD$Departed$VAC$DI$$$0
+$$703$KING$Due Out, Arrival$OCC$DI$$$2$2$0$703$29-SEP-24$02-OCT-24$Ahmadashour, Atef$Due Out
+$$703$KING$Due Out, Arrival$OCC$DI$$$2$1$0$703$02-OCT-24$05-OCT-24$Bedrina, Maria$Due In
+$$704$KING$Stayover$OCC$DI$$$1$2$0$704$01-OCT-24$05-OCT-24$Kapoor, Varun$Checked In
+$$705$CITY$Stayover$OCC$DI$$$1$2$0$705$01-OCT-24$09-OCT-24$Varghese, Bincy$Checked In
+$$706$SRPM$Due Out$OCC$DI$$$1$1$0$706$30-SEP-24$02-OCT-24$Shapiro, Vladislav$Due Out
+$$707$TWIN$Stayover$OCC$DI$$$1$1$0$707$30-SEP-24$03-OCT-24$Cebeci, Mahmut-Erkut$Checked In
+$$708$SISV$Stayover$OCC$DI$$$1$1$0$708$01-OCT-24$04-OCT-24$Muhammadimran, Malik$Checked In
+$$709$KING$Stayover$OCC$DI$$$1$2$0$709$30-SEP-24$06-OCT-24$Dhoot, Rishi-Raj$Checked In
+$$710$SISV$Stayover$OCC$DI$$$1$1$0$710$01-OCT-24$04-OCT-24$Maliknooraslam, Khan$Checked In
+$$711$KING$Stayover$OCC$DI$$$1$1$0$711$01-OCT-24$04-OCT-24$Muhammadtauseef, Khan$Checked In
+$$712$GARD$Stayover$OCC$DI$$$1$2$0$712$26-SEP-24$03-OCT-24$Gasanov, Fizuli$Checked In
+$$713$KING$Stayover$OCC$DI$$$1$1$0$713$30-SEP-24$03-OCT-24$Podvoyskiy, Andrey$Checked In
+$$714$SISV$Stayover$OCC$DI$$$1$1$0$714$01-OCT-24$04-OCT-24$Sheikhsohail, Akbar$Checked In
+$$715$KING$Stayover$OCC$DI$$$1$1$0$715$29-SEP-24$27-OCT-24$Zhang, Xiaozhen$Checked In
+$$716$KING$Stayover$OCC$DI$$$1$2$0$716$01-OCT-24$06-OCT-24$Habiba, Rasheedi$Checked In
+$$717$KING$Stayover$OCC$DI$$$1$2$0$717$26-SEP-24$03-OCT-24$Shubin, Egor$Checked In
+$$718$KING$Stayover$OCC$DI$$$1$2$0$718$01-OCT-24$06-OCT-24$Dua, Puja$Checked In
+$$719$KING$Stayover$OCC$DI$$$1$2$0$719$01-OCT-24$06-OCT-24$Dua, Sanyogita$Checked In
+$$720$SISV$Stayover$OCC$DI$$$1$1$0$720$01-OCT-24$04-OCT-24$Usman, Ali$Checked In
+$$721$KING$Due Out, Arrival$OCC$DI$$$2$1$0$721$29-SEP-24$02-OCT-24$Umit-Akturk, Mustafa$Due Out
+$$721$KING$Due Out, Arrival$OCC$DI$$$2$1$0$721$02-OCT-24$04-OCT-24$Kazancioglu, Metin$Due In
+$0$722$GARD$Departed, Arrival$VAC$DI$$$1$1$0$722$02-OCT-24$03-OCT-24$Anand, Sonia$Due In
+$$723$KING$Arrived$OCC$DI$$$1$1$0$723$02-OCT-24$04-OCT-24$Mohammed, Alhakim$Checked In
+$$724$SISV$Arrived$OCC$IP$$$1$1$0$724$02-OCT-24$03-OCT-24$De Vries, Derek$Checked In
+$$725$KING$Stayover$OCC$DI$$$1$2$0$725$30-SEP-24$06-OCT-24$Sanghi, Raghav$Checked In
+$$726$SISV$Stayover$OCC$DI$$$1$1$0$726$01-OCT-24$04-OCT-24$Khadimhussain, Sajid$Checked In
+$$727$KING$Due Out, Arrival$OCC$DI$$$2$2$0$727$29-SEP-24$02-OCT-24$Mehta, Gagan$Due Out
+$$727$KING$Due Out, Arrival$OCC$DI$$$2$2$0$727$02-OCT-24$07-OCT-24$Anikieva, Alina$Due In
+$$728$SISV$Arrived$OCC$IP$$$1$1$0$728$02-OCT-24$03-OCT-24$Fanchamps, Fabian-Paul-J$Checked In
+$$729$SISV$Stayover$OCC$DI$$$1$1$0$729$01-OCT-24$04-OCT-24$Majid, Mehmood$Checked In
+$$730$SISV$Stayover$OCC$DI$$$1$1$0$730$01-OCT-24$04-OCT-24$Muhammad, Shakeel$Checked In
+$0$731$SISV$Departed$VAC$IP$$$0
+$$732$SISV$Stayover$OCC$DI$$$1$1$0$732$01-OCT-24$04-OCT-24$Abdulwahab, Bari$Checked In
+$$733$GVTG$Stayover$OCC$DI$$$1$2$0$733$28-SEP-24$03-OCT-24$Khan, Shumaila$Checked In
+$$734$SISV$Stayover$OCC$DI$$$1$1$0$734$01-OCT-24$04-OCT-24$Muhammad, Tayyab$Checked In
+$$735$KING$Arrived$OCC$DI$$$1$1$0$735$02-OCT-24$04-OCT-24$Ruzbarsky, Marian$Checked In
+$$736$SISV$Stayover$OCC$DI$$$1$1$0$736$01-OCT-24$04-OCT-24$Muhammad, Zaman$Checked In
+$$737$KING$Due Out, Arrival$OCC$DI$$$2$1$0$737$29-SEP-24$02-OCT-24$Papila, Burak$Due Out
+$$737$KING$Due Out, Arrival$OCC$DI$$$2$1$0$737$02-OCT-24$04-OCT-24$Alali, Omarjasim$Due In
+$$738$KING$Stayover$OCC$DI$$$1$1$0$738$25-SEP-24$05-OCT-24$Dols, Roland Hubertus Luca$Checked In
+$$739$KING$Stayover$OCC$DI$$$1$1$0$739$01-OCT-24$04-OCT-24$Riaz, Hussain$Checked In
+$$740$SISV$Stayover$OCC$DI$$$1$2$0$740$01-OCT-24$04-OCT-24$Akbar, Shahzad$Checked In
+$$741$KING$Due Out$OCC$DI$$$1$2$0$741$30-SEP-24$02-OCT-24$Alotaibi, Bandar-Awadh-G$Due Out
+$$742$KING$Stayover$OCC$DI$$$1$1$0$742$01-OCT-24$04-OCT-24$Sanaullah, Afridi$Checked In
+$0$743$KING$Departed, Arrival$VAC$IP$$$1$1$0$743$02-OCT-24$04-OCT-24$Almarzooqi, Saif-Ali$Due In
+$$744$KING$Due Out, Arrival$OCC$DI$$$2$2$0$744$28-SEP-24$02-OCT-24$Manuwal, Dr Anjali$Due Out
+$$744$KING$Due Out, Arrival$OCC$DI$$$2$2$0$744$02-OCT-24$05-OCT-24$Caglarkaraca, Zeynep$Due In
+$$745$KING$Stayover$OCC$DI$$$1$1$0$745$28-SEP-24$03-OCT-24$Sehgal, Surabhi$Checked In
+$$746$SISV$Stayover$OCC$DI$$$1$1$0$746$01-OCT-24$04-OCT-24$Muhammadhammad, Akram$Checked In
+$$747$KING$Due Out$OCC$DI$$$1$1$0$747$29-SEP-24$02-OCT-24$Delibasi, Erdinc$Due Out
+$$748$KING$Stayover$OCC$DI$$$1$2$0$748$27-SEP-24$04-OCT-24$Nomani, Ana$Checked In
+$$749$KING$Stayover$OCC$DI$$$1$1$0$749$29-SEP-24$04-OCT-24$Faisal, Laeeq$Checked In
+$$750$SISV$Stayover$OCC$DI$$$1$1$0$750$01-OCT-24$04-OCT-24$Muhammadhassan, Abbasi$Checked In
+$$751$SISV$Stayover$OCC$DI$$$1$1$0$751$01-OCT-24$04-OCT-24$Muhammadnaveed, Afzal$Checked In
+$4$752$SISV$Arrival$VAC$IP$$$1$1$0$752$02-OCT-24$06-OCT-24$Alqasoumi, Saleh$Due In
+$$753$SISV$Stayover$OCC$DI$$$1$1$0$753$01-OCT-24$04-OCT-24$Muhammadjawad, Khan$Checked In
+$$754$SISV$Stayover$OCC$DI$$$1$1$0$754$01-OCT-24$04-OCT-24$Muhammad, Saleem$Checked In
+$$755$TWIN$Stayover$OCC$DI$$$1$2$0$755$01-OCT-24$06-OCT-24$Stash, Dana$Checked In
+$$756$KING$Stayover$OCC$DI$$$1$1$0$756$01-OCT-24$05-OCT-24$Mckie, Joshua-Caleb$Checked In
+$$757$KING$Due Out$OCC$DI$$$1$2$0$757$27-SEP-24$02-OCT-24$Jain, Vishal$Due Out
+$$758$KING$Stayover$OCC$DI$$$1$2$0$758$25-SEP-24$08-OCT-24$Temiralieva, Asima$Checked In
+$4$759$DTWN$Arrival$VAC$IP$$$1$2$0$759$02-OCT-24$03-OCT-24$Ghani, Iffat$Due In
+$$760$TWIN$Stayover$OCC$DI$$$1$2$0$760$01-OCT-24$05-OCT-24$Anne, Elizabeth$Checked In
+$$761$TWIN$Stayover$OCC$DI$$$1$2$0$761$01-OCT-24$06-OCT-24$Shinvari, Said-Aga-Salekh$Checked In
+$$762$KING$Stayover$OCC$DI$$$1$2$0$762$28-SEP-24$03-OCT-24$Deepika, Chopra$Checked In
+$$763$KING$Stayover$OCC$DI$$$1$1$0$763$01-OCT-24$04-OCT-24$Muhammadomer, Khan$Checked In
+$$764$SRPM$Stayover$OCC$DI$$$1$1$0$764$01-OCT-24$12-OCT-24$Mallick-Shahnawaz, Anwar-Islam$Checked In
+CF_LOGO
+
