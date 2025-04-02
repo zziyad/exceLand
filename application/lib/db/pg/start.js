@@ -1,4 +1,5 @@
 async () => {
+  console.log('Invoke start db');
   const { Pool } = npm.pg;
   // const { loadModel } = metarhia.metaschema;
   // const schemaPath = '/../NodeJS-Application/schemas';
@@ -17,15 +18,15 @@ async () => {
   //   types,
   // );
 
-  const { Database, Query } = metarhia.metasql;
+  // const { Database, Query } = metarhia.metasql;
 
-  const options = { ...config.database };
-  const pool = new Pool(options);
-  db.client = await pool.connect();
-  db.query = Query;
-  db.pg = new Database(options);
-  const {
-    rows: [{ now }],
-  } = await this.db.pg.query('SELECT now()');
-  console.system(`Connected to pg at ${new Date(now).toLocaleTimeString()}`);
+  // const options = { ...config.database };
+  // const pool = new Pool(options);
+  // db.client = await pool.connect();
+  // db.query = Query;
+  // db.pg = new Database(options);
+  // const {
+  //   rows: [{ now }],
+  // } = await this.db.pg.query('SELECT now()');
+  // console.system(`Connected to pg at ${new Date(now).toLocaleTimeString()}`);
 };

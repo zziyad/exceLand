@@ -11,7 +11,8 @@
     "context": "readonly",
     "config": "readonly",
     "npm": "readonly",
-    "metarhia": "readonly"
+    "metarhia": "readonly",
+    "prisma": "readonly"
   },
   "rules": {
     "strict": ["error", "never"],
@@ -27,6 +28,7 @@
       "node",
       "npm",
       "metarhia",
+      "prisma"
      ]
   }
 }

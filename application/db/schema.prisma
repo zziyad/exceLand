@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYEE
+  HOD
+  FINANCE
+  MOD
+  SECURITY
+  ADMIN
+}
+
+model Department {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  users         User[]
+  removals      Removal[]
+}
+
+model User {
+  id            Int         @id @default(autoincrement())
+  email         String      @unique
+  password      String
+  role          Role        // Enum instead of String
+  departmentId  Int
+  department    Department  @relation(fields: [departmentId], references: [id])
+  forms         Removal[]   // Forms created by the user
+  approvals     Approval[]  // Approvals made by the user
+}
+
+model RemovalReason {
+  id            Int       @id @default(autoincrement())
+  name          String    // e.g., "Damaged", "Obsolete", "Other"
+  removals      Removal[]
+}
+
+model RemovalImage {
+  id            Int      @id @default(autoincrement())
+  removalId     Int
+  url           String   // Base64 string for image
+  removal       Removal  @relation(fields: [removalId], references: [id])
+}
+
+model Approval {
+  id            Int      @id @default(autoincrement())
+  removalId     Int
+  removal       Removal  @relation(fields: [removalId], references: [id])
+  level         String   // "hod", "finance", "mod", "security"
+  approverId    Int
+  approver      User     @relation(fields: [approverId], references: [id])
+  approval      String
+  signature     String?  // Base64 string
+  signatureDate DateTime?
+}
+
+model Removal {
+  id                  Int            @id @default(autoincrement())
+  userId              Int
+  user                User           @relation(fields: [userId], references: [id])
+  removalTerms        String         // "non-returnable" or "returnable"
+  dateFrom            DateTime
+  dateTo              DateTime?
+  employee            String
+  departmentId        Int
+  department          Department     @relation(fields: [departmentId], references: [id])
+  itemDescription     String
+  removalReasonId     Int
+  removalReason       RemovalReason  @relation(fields: [removalReasonId], references: [id])
+  customReason        String?        // If "Other" is selected
+  images              RemovalImage[]
+  approvals           Approval[]
+  status              String         // "pending", "hod_approved", "finance_approved", "mod_approved", "approved", "rejected"
+  rejectionReason     String?        // If rejected
+  createdAt           DateTime       @default(now())
+}

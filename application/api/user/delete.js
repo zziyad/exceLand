@@ -1,10 +1,10 @@
 ({
   access: 'public',
-  method: async ({ id, data }) => {
+  method: async ({ id }) => {
     const appError = await lib.appError();
-    const { updateUser } = api.user.provider();
+    const { deactivateUser } = api.user.provider();
     try {
-      const user = await updateUser();
+      const users = await deactivateUser(id);
       return users;
     } catch (error) {
       new appError('Email already exists', 400);

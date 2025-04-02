@@ -2,7 +2,7 @@
 
 const { node } = require('./dependencies.js');
 
-const STARTS_LEVEL_DEPTH = 3;
+const STARTS_LEVEL_DEPTH = 1;
 const starts = [];
 const OPTIONS = { timeout: 5000, displayErrors: false };
 
@@ -17,6 +17,8 @@ const load = async (filePath, sandbox, contextualize = false) => {
   if (index !== -1) {
     const names = pathComponents.slice(index + 1);
     for (const [depth, name] of names.entries()) {
+      console.log('invoke 3');
+      
       if (depth <= STARTS_LEVEL_DEPTH && name === 'start.js')
         if (exports.constructor.name === 'AsyncFunction') starts.push(exports);
         else console.error(`${name} expected to be an async function`);
