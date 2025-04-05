@@ -1,50 +1,80 @@
 ({
   access: 'public',
-  method: async ({ email, password, role = 'EMPLOYEE', departmentId }) => {
+  method: async ({
+    fullName,
+    email,
+    password,
+    position, // Added required field
+    role = 'LEVEL_1', // Updated default role to match enum
+    departmentId,
+  }) => {
     const appError = await lib.appError();
-    // const sendMail = await lib.sendEmail;
-    // const { otp } = api.auth.provider();
-
-    console.log({ email, password, role, departmentId });
-
     try {
+      // Validate required fields
+      if (!fullName || !email || !password || !position || !departmentId) {
+        return {
+          status: 'error',
+          response: new appError(
+            'All fields (fullName, email, password, position, departmentId) are required',
+            400,
+          ),
+        };
+      }
+
+      // Check if email already exists
       const existingUser = await prisma.user.findUnique({
-        where: { email: email },
+        where: { email },
       });
 
-      console.log({ existingUser: !existingUser });
-
-      if (!!existingUser)
+      if (existingUser) {
         return {
           status: 'error',
           response: new appError('Email already exists', 400),
         };
+      }
 
-      console.log({ role });
+      // Validate role is part of the Role enum
+      const validRoles = [
+        'LEVEL_1',
+        'LEVEL_2',
+        'LEVEL_3',
+        'LEVEL_4',
+        'SECURITY',
+        'ADMIN',
+      ];
+      if (!validRoles.includes(role)) {
+        return {
+          status: 'error',
+          response: new appError('Invalid role specified', 400),
+        };
+      }
 
       const hash = await metarhia.metautil.hashPassword(password);
 
       const newUser = await prisma.user.create({
         data: {
+          fullName,
           email,
           password: hash,
-          role,
+          position, // New required field
+          role, // Will use the validated role
           departmentId: parseInt(departmentId),
         },
       });
 
-      // const options = {
-      //   email: newUser.email,
-      //   subject: 'OTP Email Verification',
-      //   html: `<h1>OTP: ${otp()}</h1>`,
-      // };
-
-      // console.log('User registered:', newUser);
-      // await sendMail(options);
-
       return {
         status: 'success',
-        response: { msg: 'User registered successfully' },
+        response: {
+          msg: 'User registered successfully',
+          user: {
+            id: newUser.id,
+            fullName: newUser.fullName,
+            email: newUser.email,
+            position: newUser.position,
+            role: newUser.role,
+            departmentId: newUser.departmentId,
+          },
+        },
       };
     } catch (e) {
       throw new appError(e.message, 500);

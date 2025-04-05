@@ -27,14 +27,16 @@ class Client {
     return token;
   }
 
-  async startSession(token, data = {}) {
+  async startSession(token) {
     // this.session = { token, state: { ...data } };
     // await redisSet(
     //   token,
     //   this.config.sessions.expiry || 360000,
     //   JSON.stringify(this.session),
     // );
-    if (!this.#transport.connection) this.#transport.sendSessionCookie(token);
+    const expiry = this.config.sessions.expiry;
+    if (!this.#transport.connection)
+      this.#transport.sendSessionCookie(token, expiry);
     return true;
   }
 

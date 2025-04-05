@@ -8,30 +8,36 @@ datasource db {
 }
 
 enum Role {
-  EMPLOYEE
-  HOD
-  FINANCE
-  MOD
+  LEVEL_1
+  LEVEL_2
+  LEVEL_3
+  LEVEL_4
   SECURITY
   ADMIN
 }
 
 model Department {
-  id            Int      @id @default(autoincrement())
-  name          String   @unique
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
   users         User[]
   removals      Removal[]
 }
 
 model User {
-  id            Int         @id @default(autoincrement())
-  email         String      @unique
-  password      String
-  role          Role        // Enum instead of String
-  departmentId  Int
-  department    Department  @relation(fields: [departmentId], references: [id])
-  forms         Removal[]   // Forms created by the user
-  approvals     Approval[]  // Approvals made by the user
+  id                Int                 @id @default(autoincrement())
+  fullName          String
+  email             String              @unique
+  password          String
+  position          String              // Stores actual job title (e.g., "Manager", "Clerk")
+  role              Role                // Assigned dynamically (LEVEL_1, LEVEL_2, etc.)
+  departmentId      Int
+  department        Department          @relation(fields: [departmentId], references: [id])
+  forms             Removal[]           // Removals created by this user
+  approvals         Approval[]          // Approvals given by this user
+  notifications     RemovalNotification[] // Notifications received by this user
+  returnsReceived   ReturnRecord[]      @relation("ReceivedBy") // Returns received by this user
+  extensionRequests ExtensionRequest[]  // Extension requests made by this user
+  processedExtensions ExtensionRequest[] @relation("ProcessedExtensions") // Extensions processed by this user
 }
 
 model RemovalReason {
@@ -60,22 +66,66 @@ model Approval {
 }
 
 model Removal {
-  id                  Int            @id @default(autoincrement())
+  id                  Int                   @id @default(autoincrement())
   userId              Int
-  user                User           @relation(fields: [userId], references: [id])
-  removalTerms        String         // "non-returnable" or "returnable"
+  user                User                  @relation(fields: [userId], references: [id])
+  removalTerms        String                // "returnable" or "non-returnable"
   dateFrom            DateTime
   dateTo              DateTime?
   employee            String
   departmentId        Int
-  department          Department     @relation(fields: [departmentId], references: [id])
+  department          Department            @relation(fields: [departmentId], references: [id])
   itemDescription     String
   removalReasonId     Int
-  removalReason       RemovalReason  @relation(fields: [removalReasonId], references: [id])
-  customReason        String?        // If "Other" is selected
+  removalReason       RemovalReason         @relation(fields: [removalReasonId], references: [id])
+  customReason        String?               // If "Other" is selected
   images              RemovalImage[]
   approvals           Approval[]
-  status              String         // "pending", "hod_approved", "finance_approved", "mod_approved", "approved", "rejected"
-  rejectionReason     String?        // If rejected
-  createdAt           DateTime       @default(now())
+  status              String                // "pending", "hod_approved", "finance_approved", "mod_approved", "approved", "rejected"
+  rejectionReason     String?               // If rejected
+  createdAt           DateTime              @default(now())
+  notifications       RemovalNotification[] // Notifications related to this removal
+  returnRecords       ReturnRecord[]        // Return records related to this removal
+  extensionRequests   ExtensionRequest[]    // Extension requests related to this removal
+}
+
+model RemovalNotification {
+  id            Int       @id @default(autoincrement())
+  removalId     Int
+  removal       Removal   @relation(fields: [removalId], references: [id])
+  type          String    // "APPROACHING_RETURN", "OVERDUE", etc.
+  message       String
+  isRead        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  userId        Int       // Who should receive the notification
+  user          User      @relation(fields: [userId], references: [id])
+}
+
+model ReturnRecord {
+  id                Int       @id @default(autoincrement())
+  removalId         Int
+  removal           Removal   @relation(fields: [removalId], references: [id])
+  returnDate        DateTime
+  condition         String    // "Good", "Damaged", etc.
+  notes             String?
+  receivedById      Int
+  receivedBy        User      @relation(fields: [receivedById], references: [id], name: "ReceivedBy")
+  createdAt         DateTime  @default(now())
+}
+
+model ExtensionRequest {
+  id                Int       @id @default(autoincrement())
+  removalId         Int
+  removal           Removal   @relation(fields: [removalId], references: [id])
+  originalDate      DateTime
+  newDate           DateTime
+  reason            String
+  status            String    // "PENDING", "APPROVED", "REJECTED"
+  requestedById     Int
+  requestedBy       User      @relation(fields: [requestedById], references: [id])
+  processedById     Int?
+  processedBy       User?     @relation("ProcessedExtensions", fields: [processedById], references: [id])
+  processedAt       DateTime?
+  comments          String?
+  createdAt         DateTime  @default(now())
 }

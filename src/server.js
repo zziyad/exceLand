@@ -4,6 +4,7 @@ const { HttpTransport, HEADERS } = require('./transport.js');
 const { Client } = require('./client.js');
 const { receiveBody, jsonParse, extractPath } = require('../lib/common.js');
 const { node } = require('./dependencies.js');
+const { getRouteProcedure } = require('../lib/common.js');
 
 class Server {
   constructor(application) {
@@ -19,6 +20,7 @@ class Server {
 
   listen(port) {
     this.httpServer.on('request', async (req, res) => {
+      console.log({ URL: req.url });
       if (req.url.includes('api') && !req.url.startsWith('/api')) {
         req.url = extractPath(req.url);
       }
@@ -72,8 +74,7 @@ class Server {
       return;
     }
 
-    const [unit, method] = packet.method.split('/');
-    const proc = this.routing.get(unit + '.' + method);
+    const proc = getRouteProcedure(this.routing, packet.method);
     if (!proc) return void client.error(404, { id });
     const access = proc().access;
     const context = client.createContext();

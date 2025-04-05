@@ -19,7 +19,7 @@ const HEADERS = {
   'X-XSS-Protection': '1; mode=block',
   'X-Content-Type-Options': 'nosniff',
   'Strict-Transport-Security': 'max-age=31536000; includeSubdomains; preload',
-  'Access-Control-Allow-Origin': 'http://localhost:5173',
+  'Access-Control-Allow-Origin': 'http://localhost:8080',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
   'Access-Control-Allow-Headers':
     'Origin, X-Requested-With, Content-Type ,Accept',
@@ -101,14 +101,18 @@ class HttpTransport extends Transport {
     return { coockie: metautil.parseCookies(cookie), headers };
   }
 
-  sendSessionCookie(token) {
+  sendSessionCookie(token, expiryMs = 10 * 60 * 1000) {
     let isProduction = false;
     const host = metautil.parseHost(this.req.headers.host);
-    let cookie = `${TOKEN}=${token}; ${LOCATION}; Expires=${FUTURE}`;
+
+    const expireDate = new Date(Date.now() + expiryMs).toUTCString();
+
+    let cookie = `${TOKEN}=${token}; ${LOCATION}; Expires=${expireDate}`;
     cookie += `; Domain=${host}`;
     cookie += '; HttpOnly'; // Prevent JS access
     cookie += isProduction ? '; Secure' : ''; // HTTPS only in production
-    cookie += '; SameSite=Lax'; // CSRF protection, adjust as needed
+    cookie += '; SameSite=Lax'; // CSRF protection
+
     this.res.setHeader('Set-Cookie', cookie);
   }
 

@@ -1,6 +1,8 @@
 ({
   access: 'public',
   method: async ({ name }) => {
+    const appError = await lib.appError();
+
     try {
       if (!name)
         return {

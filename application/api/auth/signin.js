@@ -3,14 +3,21 @@
   method: async ({ email, password }) => {
     console.log({ email, password });
 
-    if (!email && !password)
+    if (!email || !password) {
       return {
         status: 'error',
-        response: { msg: 'one of arguments was not passed' },
+        response: { msg: 'Email and password are required' },
       };
-    const user = await prisma.user.findUnique({ where: { email } });
+    }
 
-    console.log({ user });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        department: {
+          select: { name: true },
+        },
+      },
+    });
 
     if (
       !user ||
@@ -21,14 +28,29 @@
         response: { msg: 'Incorrect email or password' },
       };
     }
-    const data = { user, sessionId: context.uuid };
+
+    const formattedUser = {
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      position: user.position,
+      role: user.role,
+      departmentName: user.department.name,
+    };
+    console.log({ formattedUser });
+
+    const data = { user: formattedUser, sessionId: context.uuid };
     const token = await context.client.encrypt(data);
     console.log({ token });
 
     context.client.startSession(token);
+
     return {
       status: 'logged',
-      response: { msg: 'You have successfully logged in', user },
+      response: {
+        msg: 'You have successfully logged in',
+        user: formattedUser,
+      },
     };
   },
 });

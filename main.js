@@ -27,6 +27,7 @@ const sandbox = node.vm.createContext({
   const apiPath = node.path.join(appPath, './api');
   const api = await loadDir(apiPath, sandbox, true);
   const routing = createRouting(api);
+
   const application = {
     path: appPath,
     sandbox,
@@ -53,7 +54,6 @@ const sandbox = node.vm.createContext({
   application.config = config.tree;
   application.server = new Server(application);
   await application.static.load();
-
   application.starts.map(common.execute);
   application.starts = [];
 })();

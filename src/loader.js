@@ -18,7 +18,7 @@ const load = async (filePath, sandbox, contextualize = false) => {
     const names = pathComponents.slice(index + 1);
     for (const [depth, name] of names.entries()) {
       console.log('invoke 3');
-      
+
       if (depth <= STARTS_LEVEL_DEPTH && name === 'start.js')
         if (exports.constructor.name === 'AsyncFunction') starts.push(exports);
         else console.error(`${name} expected to be an async function`);
