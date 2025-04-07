@@ -3,6 +3,9 @@
   method: async ({ id }) => {
     const appError = await lib.appError();
 
+    const cc = await context;
+    console.log({ cc });
+
     try {
       // Validate input
       if (!id || isNaN(parseInt(id))) {
@@ -12,17 +15,22 @@
         };
       }
 
-      // Fetch the removal by ID with related data
+      // Fetch the removal by ID with related data, excluding user info
       const removal = await prisma.removal.findUnique({
         where: { id: parseInt(id) },
         include: {
           department: {
             select: { name: true }, // Get department name
           },
-          removalReason: {
-            select: { name: true }, // Get removal reason name
+          items: {
+            include: {
+              removalReason: {
+                select: { name: true }, // Get removal reason name for each item
+              },
+            },
           },
           images: true, // Include associated images
+          approvals: true, // Include approvals
         },
       });
 
@@ -47,13 +55,26 @@
             dateFrom: removal.dateFrom.toISOString(),
             dateTo: removal.dateTo ? removal.dateTo.toISOString() : null,
             employee: removal.employee,
-            departmentName: removal.department.name, // Return department name instead of ID
-            itemDescription: removal.itemDescription,
-            removalReason: removal.removalReason.name, // Return reason name instead of ID
-            customReason: removal.customReason,
+            departmentName: removal.department.name,
+            items: removal.items.map((item) => ({
+              id: item.id,
+              description: item.description,
+              removalReason: item.removalReason.name,
+              customReason: item.customReason,
+            })),
             images: removal.images.map((image) => ({
               id: image.id,
               url: image.url,
+            })),
+            approvals: removal.approvals.map((approval) => ({
+              id: approval.id,
+              level: approval.level,
+              approval: approval.approval,
+              signature: approval.signature,
+              signatureDate: approval.signatureDate
+                ? approval.signatureDate.toISOString()
+                : null,
+              approverId: approval.approverId,
             })),
           },
         },

@@ -1,8 +1,6 @@
 ({
   access: 'public',
   method: async ({ email, password }) => {
-    console.log({ email, password });
-
     if (!email || !password) {
       return {
         status: 'error',
@@ -36,12 +34,20 @@
       position: user.position,
       role: user.role,
       departmentName: user.department.name,
+      // expiry: config.sessions.expiry,
     };
     console.log({ formattedUser });
 
     const data = { user: formattedUser, sessionId: context.uuid };
     const token = await context.client.encrypt(data);
     console.log({ token });
+    context.client.session = {
+      id: user.id,
+      role: user.role,
+      departmentName: user.department.name,
+    };
+
+    console.log({ context });
 
     context.client.startSession(token);
 

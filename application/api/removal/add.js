@@ -4,26 +4,30 @@
     removalTerms,
     dateFrom,
     dateTo,
+    employee,
     departmentId,
-    itemDescription,
-    removalReasonId,
-    customReason,
+    items,
     images,
   }) => {
     const appError = await lib.appError();
 
     try {
       // Basic required field validation
-      if (
-        !removalTerms ||
-        !departmentId ||
-        !itemDescription ||
-        !removalReasonId
-      ) {
+      if (!removalTerms || !departmentId || !items || !employee) {
         return {
           status: 'error',
           response: {
-            msg: 'Missing required fields: removalTerms, departmentId, itemDescription, removalReasonId',
+            msg: 'Missing required fields: removalTerms, departmentId, items, employee',
+          },
+        };
+      }
+
+      // Validate items array
+      if (!Array.isArray(items) || items.length === 0) {
+        return {
+          status: 'error',
+          response: {
+            msg: 'items must be a non-empty array',
           },
         };
       }
@@ -92,26 +96,38 @@
         };
       }
 
-      // Validate removal reason existence
-      const removalReason = await prisma.removalReason.findUnique({
-        where: { id: removalReasonId },
-        select: { id: true, name: true }, // Include name for "OTHER" check
-      });
-      if (!removalReason) {
-        return {
-          status: 'error',
-          response: { msg: 'Removal reason not found' },
-        };
-      }
+      // Validate removal reasons for each item
+      for (const item of items) {
+        if (!item.description || !item.removalReasonId) {
+          return {
+            status: 'error',
+            response: {
+              msg: 'Each item must have a description and removalReasonId',
+            },
+          };
+        }
 
-      // Check if customReason is required (assuming "OTHER" is a reason name)
-      if (removalReason.name === 'OTHER' && !customReason) {
-        return {
-          status: 'error',
-          response: {
-            msg: 'customReason is required when removal reason is "OTHER"',
-          },
-        };
+        const removalReason = await prisma.removalReason.findUnique({
+          where: { id: item.removalReasonId },
+          select: { id: true, name: true },
+        });
+        if (!removalReason) {
+          return {
+            status: 'error',
+            response: {
+              msg: `Removal reason ${item.removalReasonId} not found`,
+            },
+          };
+        }
+
+        if (removalReason.name === 'OTHER' && !item.customReason) {
+          return {
+            status: 'error',
+            response: {
+              msg: 'customReason is required when removal reason is "OTHER"',
+            },
+          };
+        }
       }
 
       // Validate images if provided
@@ -126,27 +142,36 @@
         };
       }
 
-      // Create the removal request with nested RemovalImage creation
+      // Create the removal request with nested RemovalItem and RemovalImage creation
       const removal = await prisma.removal.create({
         data: {
-          userId: 1, // Placeholder; replace with actual authenticated user ID (e.g., context.user.id)
+          userId: 1, // Replace with actual authenticated user ID
           removalTerms: normalizedTerms,
           dateFrom: new Date(dateFrom),
           dateTo: dateTo ? new Date(dateTo) : null,
-          employee: normalizedTerms === 'non-returnable' ? '' : '', // Default empty string
+          employee,
           departmentId,
-          itemDescription,
-          removalReasonId,
-          customReason: customReason || null,
-          status: 'pending', // Initial status
+          status: 'pending',
+          items: {
+            create: items.map((item) => ({
+              description: item.description,
+              removalReasonId: item.removalReasonId,
+              customReason: item.customReason || null,
+            })),
+          },
           images: images
             ? {
-                create: images.map((url) => ({ url })), // Create RemovalImage records
+                create: images.map((url) => ({ url })),
               }
             : undefined,
         },
         include: {
-          images: true, // Include created images in the response
+          items: {
+            include: {
+              removalReason: true, // Include removal reason details
+            },
+          },
+          images: true,
         },
       });
 
@@ -163,9 +188,13 @@
             dateTo: removal.dateTo ? removal.dateTo.toISOString() : null,
             employee: removal.employee,
             departmentId: removal.departmentId,
-            itemDescription: removal.itemDescription,
-            removalReasonId: removal.removalReasonId,
-            customReason: removal.customReason,
+            items: removal.items.map((item) => ({
+              id: item.id,
+              description: item.description,
+              removalReasonId: item.removalReasonId,
+              removalReason: item.removalReason.name,
+              customReason: item.customReason,
+            })),
             images: removal.images.map((image) => ({
               id: image.id,
               url: image.url,

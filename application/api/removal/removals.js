@@ -32,11 +32,15 @@
         take: parsedLimit,
         orderBy: { createdAt: 'desc' }, // Sort by creation date, newest first
         include: {
-          user: {
-            select: { fullName: true }, // Get user's full name
-          },
           department: {
             select: { name: true }, // Get department name
+          },
+          items: {
+            include: {
+              removalReason: {
+                select: { name: true }, // Get removal reason name for each item
+              },
+            },
           },
         },
       });
@@ -47,13 +51,17 @@
       // Format the response
       const formattedRemovals = removals.map((removal) => ({
         id: removal.id,
-        userId: removal.userId,
-        userName: removal.user.fullName,
-        departmentName: removal.department.name,
         removalTerms: removal.removalTerms,
         dateFrom: removal.dateFrom.toISOString(),
         dateTo: removal.dateTo ? removal.dateTo.toISOString() : null,
-        itemDescription: removal.itemDescription,
+        employee: removal.employee,
+        departmentName: removal.department.name,
+        items: removal.items.map((item) => ({
+          id: item.id,
+          description: item.description,
+          removalReason: item.removalReason.name,
+          customReason: item.customReason,
+        })),
         status: removal.status,
         createdAt: removal.createdAt.toISOString(),
       }));

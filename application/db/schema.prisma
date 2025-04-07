@@ -41,9 +41,9 @@ model User {
 }
 
 model RemovalReason {
-  id            Int       @id @default(autoincrement())
-  name          String    // e.g., "Damaged", "Obsolete", "Other"
-  removals      Removal[]
+  id            Int           @id @default(autoincrement())
+  name          String        // e.g., "Damaged", "Obsolete", "Other"
+  removals      RemovalItem[] // Updated to reference RemovalItem instead of Removal
 }
 
 model RemovalImage {
@@ -69,24 +69,31 @@ model Removal {
   id                  Int                   @id @default(autoincrement())
   userId              Int
   user                User                  @relation(fields: [userId], references: [id])
-  removalTerms        String                // "returnable" or "non-returnable"
+  removalTerms        String                // "non-returnable" or "returnable"
   dateFrom            DateTime
   dateTo              DateTime?
   employee            String
   departmentId        Int
   department          Department            @relation(fields: [departmentId], references: [id])
-  itemDescription     String
-  removalReasonId     Int
-  removalReason       RemovalReason         @relation(fields: [removalReasonId], references: [id])
-  customReason        String?               // If "Other" is selected
+  items               RemovalItem[]         // New relation to RemovalItem
   images              RemovalImage[]
   approvals           Approval[]
   status              String                // "pending", "hod_approved", "finance_approved", "mod_approved", "approved", "rejected"
   rejectionReason     String?               // If rejected
   createdAt           DateTime              @default(now())
-  notifications       RemovalNotification[] // Notifications related to this removal
-  returnRecords       ReturnRecord[]        // Return records related to this removal
-  extensionRequests   ExtensionRequest[]    // Extension requests related to this removal
+  notifications       RemovalNotification[]
+  returnRecords       ReturnRecord[]
+  extensionRequests   ExtensionRequest[]
+}
+
+model RemovalItem {
+  id               Int           @id @default(autoincrement())
+  removalId        Int
+  description      String
+  removalReasonId  Int
+  removalReason    RemovalReason @relation(fields: [removalReasonId], references: [id])
+  customReason     String?       // If "Other" is selected
+  removal          Removal       @relation(fields: [removalId], references: [id])
 }
 
 model RemovalNotification {
