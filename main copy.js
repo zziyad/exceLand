@@ -6,8 +6,9 @@ const prisma = require('./lib/prisma.js');
 const common = require('./lib/common.js');
 const { loadDir, createRouting } = require('./src/loader.js');
 const { Static } = require('./src/static.js');
-const { Server } = require('./src/server.js'); // Updated import
+const { Server } = require('./src/server.js');
 const { Code } = require('./src/code.js');
+const { start } = require('repl');
 const { DirectoryWatcher } = metarhia.metawatch;
 
 const starts = [];
@@ -27,7 +28,6 @@ const sandbox = node.vm.createContext({
   const apiPath = node.path.join(appPath, './api');
   const api = await loadDir(apiPath, sandbox, true);
   const routing = createRouting(api);
-
   const application = {
     path: appPath,
     sandbox,
@@ -39,11 +39,10 @@ const sandbox = node.vm.createContext({
   const lib = new Code('lib', application);
   const domain = new Code('domain', application);
   application.static = new Static('static', application);
-  application.watcher = new DirectoryWatcher({ timeout: 1000 });
-  await lib.load();
+  (application.watcher = new DirectoryWatcher({ timeout: 1000 })),
+    await lib.load();
   await domain.load();
   await config.load();
-
   Object.assign(sandbox, {
     api,
     lib: lib.tree,
@@ -54,6 +53,8 @@ const sandbox = node.vm.createContext({
   application.config = config.tree;
   application.server = new Server(application);
   await application.static.load();
+  console.log({ start });
+
   application.starts.map(common.execute);
   application.starts = [];
 })();

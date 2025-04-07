@@ -10,4 +10,4 @@ node_modules
 LICENSE
 README.md
 npm-debug.log
-data/
+data

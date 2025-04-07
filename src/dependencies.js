@@ -56,6 +56,7 @@ const pkg = require(process.cwd() + '/package.json');
 
 if (pkg.dependencies) {
   for (const dependency of Object.keys(pkg.dependencies)) {
+    
     npm[dependency] = require(dependency);
   }
 }

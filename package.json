@@ -4,16 +4,24 @@
   "description": "Pure NodeJS application runtime",
   "license": "MIT",
   "private": true,
+  "prisma": {
+    "schema": "application/db/schema.prisma"
+  },
   "main": "main.js",
   "scripts": {
     "test": "npm run lint && tsc",
     "lint": "eslint . && prettier -c \"**/*.js\" \"**/*.ts\"",
-    "fmt": "prettier --write \"**/*.js\" \"**/*.ts\""
+    "fmt": "prettier --write \"**/*.js\" \"**/*.ts\"",
+    "db:migrate": "npx prisma migrate dev",
+    "db:reset": "prisma migrate reset && prisma migrate dev",
+    "db:studio": "prisma studio"
   },
   "engines": {
     "node": "16 || 18 || 19 || 20"
   },
   "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "jsonwebtoken": "^9.0.2",
     "metasql": "^3.0.0-alpha.2",
     "metautil": "^3.7.2",
     "metawatch": "^1.2.2",
@@ -32,6 +40,7 @@
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.2",
+    "prisma": "^6.5.0",
     "typescript": "^5.0.4"
   }
 }
