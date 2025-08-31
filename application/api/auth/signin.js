@@ -7,7 +7,7 @@
       const acct = String(email || '').toLowerCase().trim();
       const ipRes = await context.client.checkSlidingLimit('signin', 'ip', ip, 60, 10);
       if (!ipRes.allowed) {
-        try { require('../../lib/logger.js').security('login-rate-limited', { ip, acct }); } catch {}
+        try { console.security('login-rate-limited', { ip, acct }); } catch {}
         const err = new Error('Too many requests');
         err.code = 'RATE_LIMITED';
         err.httpCode = 429;
@@ -17,7 +17,7 @@
       if (acct) {
         const acctRes = await context.client.checkSlidingLimit('signin', 'acct', acct, 60, 5);
         if (!acctRes.allowed) {
-          try { require('../../lib/logger.js').security('login-rate-limited', { ip, acct }); } catch {}
+          try { console.security('login-rate-limited', { ip, acct }); } catch {}
           const err = new Error('Too many requests');
           err.code = 'RATE_LIMITED';
           err.httpCode = 429;
@@ -40,13 +40,13 @@
       // Get user by email
       const user = await lib.provider.getUser(email);
       if (!user) {
-        try { require('../../lib/logger.js').security('login-failed', { email, ip: context.client.ip }); } catch {}
+        try { console.security('login-failed', { email, ip: context.client.ip }); } catch {}
         return { status: 'rejected', response: 'Invalid email or password' };
       }
 
       // Check if user is active
       if (!user.is_active) {
-        try { require('../../lib/logger.js').security('login-failed', { email, ip: context.client.ip, reason: 'inactive' }); } catch {}
+        try { console.security('login-failed', { email, ip: context.client.ip, reason: 'inactive' }); } catch {}
         return {
           status: 'rejected',
           response: 'Account is deactivated. Please contact administrator.',
@@ -59,7 +59,7 @@
         user.password_hash,
       );
       if (!ok) {
-        try { require('../../lib/logger.js').security('login-failed', { email, ip: context.client.ip }); } catch {}
+        try { console.security('login-failed', { email, ip: context.client.ip }); } catch {}
         return {
           status: 'rejected',
           response: 'Invalid email or password',
@@ -113,14 +113,14 @@
         { createdBy: 'login' },
       );
       if (!started) {
-        try { require('../../lib/logger.js').security('login-failed', { email, ip: context.client.ip, reason: 'session-start' }); } catch {}
+        try { console.security('login-failed', { email, ip: context.client.ip, reason: 'session-start' }); } catch {}
         return {
           status: 'rejected',
           response: 'Failed to create session',
         };
       }
 
-      try { require('../../lib/logger.js').security('login-success', { email, userId: user.id, ip: context.client.ip }); } catch {}
+      try { console.security('login-success', { email, userId: user.id, ip: context.client.ip }); } catch {}
 
       return {
         status: 'logged',

@@ -16,21 +16,21 @@
       if (!userId && refreshRaw) {
         try {
           const r = await context.client.getRefreshByRaw(refreshRaw);
-          if (r?.data?.userId) userId = r.data.userId;
+          if (r?.data?.userId) userId = r.data.userId;  
         } catch {}
       }
 
       if (userId) {
         // Global logout: invalidate all sessions for this user
         try {
-          await context.sessionManager.invalidateAllUserSessions(userId);
-          try { require('../../lib/logger.js').security('logout-all', { userId, ip: context.client.ip }); } catch {}
+          await context.client.invalidateAllUserSessions(userId);
+          try { console.security('logout-all', { userId, ip: context.client.ip }); } catch {}
         } catch {}
       } else {
         // Fallback: invalidate what we know
         if (accessToken) { try { await context.client.invalidateAccessSession(accessToken); } catch {} }
         if (refreshRaw) { try { await context.client.invalidateRefreshByRaw(refreshRaw); } catch {} }
-        try { require('../../lib/logger.js').security('logout-partial', { ip: context.client.ip }); } catch {}
+        try { console.security('logout-partial', { ip: context.client.ip }); } catch {}
       }
 
       // Always clear cookies (handles cases when tokens were already missing)

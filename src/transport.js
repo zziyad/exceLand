@@ -57,7 +57,7 @@ class Transport {
     console.error(`${this.ip}\t${method}\t${url}\t${reason}`);
     const packet = { type: 'callback', id, error: { message, code, status } };
     const data = JSON.stringify(packet);
-    this.write(data, httpCode, 'json', { headers: extraHeaders || undefined });
+    this.send(data, httpCode, 'json', { headers: extraHeaders || undefined });
   }
 
   send(obj, code = 200) {

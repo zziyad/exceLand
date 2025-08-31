@@ -7,7 +7,7 @@
         const ip = context.client.ip;
         const ipRes = await context.client.checkSlidingLimit('refresh', 'ip', ip, 300, 30);
         if (!ipRes.allowed) {
-          try { require('../../lib/logger.js').security('refresh-rate-limited', { ip }); } catch {}
+          try { console.security('refresh-rate-limited', { ip }); } catch {}
           return { status: 'rejected', response: 'Too many requests' };
         }
       } catch {}
@@ -38,7 +38,7 @@
         const userId = refreshInfo.userId;
         const uRes = await context.client.checkSlidingLimit('refresh', 'user', String(userId), 300, 15);
         if (!uRes.allowed) {
-          try { require('../../lib/logger.js').security('refresh-rate-limited', { userId }); } catch {}
+          try { console.security('refresh-rate-limited', { userId }); } catch {}
           return { status: 'rejected', response: 'Too many requests' };
         }
       } catch {}
@@ -50,11 +50,12 @@
       const meta = refreshInfo.meta || {};
       const currentUa = context.client.getUserAgent?.() || '';
       const currentUaHash = hashTokenHex(currentUa);
-      const currentIp = context.client.ip;
+      const { normalizeIp } = common;
+      const currentIp = normalizeIp(context.client.ip);
       if (meta.uaHash && meta.uaHash !== currentUaHash) {
         try { await context.sessionManager.invalidateAllUserSessions(userId); } catch {}
         try { context.client.clearSessionCookies(); } catch {}
-        try { require('../../lib/logger.js').security('refresh-reuse-detected', { userId, reason: 'uaHash' }); } catch {}
+        try { console.security('refresh-reuse-detected', { userId, reason: 'uaHash' }); } catch {}
         return { status: 'rejected', response: 'Refresh reuse detected' };
       }
       // allow subnet match to reduce false positives behind NAT
@@ -63,7 +64,7 @@
       if (meta.ip && !sameSubnet(meta.ip, currentIp, maskBits)) {
         try { await context.sessionManager.invalidateAllUserSessions(userId); } catch {}
         try { context.client.clearSessionCookies(); } catch {}
-        try { require('../../lib/logger.js').security('refresh-reuse-detected', { userId, reason: 'ipMismatch', metaIp: meta.ip, currentIp }); } catch {}
+        try { console.security('refresh-reuse-detected', { userId, reason: 'ipMismatch', metaIp: meta.ip, currentIp }); } catch {}
         return { status: 'rejected', response: 'Refresh reuse detected' };
       }
 
@@ -128,7 +129,7 @@
       // Invalidate old refresh token (rotation)
       await context.client.invalidateRefreshByRaw(refreshRaw);
 
-      try { require('../../lib/logger.js').security('refresh-success', { userId: user.id, ip: context.client.ip }); } catch {}
+      try { console.security('refresh-success', { userId: user.id, ip: context.client.ip }); } catch {}
 
       return {
         status: 'refreshed',

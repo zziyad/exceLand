@@ -139,7 +139,8 @@ class Client extends EventEmitter {
   }
 
   getRequestMeta() {
-    return { ip: this.ip, userAgent: this.getUserAgent() };
+    const { normalizeIp } = require('../lib/common.js');
+    return { ip: normalizeIp(this.ip), userAgent: this.getUserAgent() };
   }
 
   // Rate limit proxy to sessionManager
@@ -154,11 +155,12 @@ class Client extends EventEmitter {
       await sessionManager.createAccessSession(accessToken, data);
       // Store refresh mapped to user id
       const { hashTokenHex } = require('../lib/common.js');
+      const { normalizeIp } = require('../lib/common.js');
       const ua = this.getUserAgent() || '';
       const uaHash = hashTokenHex(ua);
       const meta = {
         createdBy: options.createdBy || 'login',
-        ip: this.ip,
+        ip: normalizeIp(this.ip),
         uaHash,
       };
       await sessionManager.createRefreshTokenByHash(refreshHash, data.id, meta);
@@ -199,6 +201,9 @@ class Client extends EventEmitter {
     return sessionManager.invalidateAccessSession(accessToken);
   }
 
+  invalidateAllUserSessions(userId) {
+    return sessionManager.invalidateAllUserSessions(userId);
+  }
 
 
   destroy() {
