@@ -5,7 +5,7 @@
       // Rate limit: per IP and per user (after refreshData)
       try {
         const ip = context.client.ip;
-        const ipRes = await context.sessionManager.checkSlidingLimit('refresh', 'ip', ip, 300, 30);
+        const ipRes = await context.client.checkSlidingLimit('refresh', 'ip', ip, 300, 30);
         if (!ipRes.allowed) return { status: 'rejected', response: 'Too many requests' };
       } catch {}
       // Get refresh token from cookies
@@ -33,7 +33,7 @@
       // Now we can rate limit by userId too
       try {
         const userId = refreshInfo.userId;
-        const uRes = await context.sessionManager.checkSlidingLimit('refresh', 'user', String(userId), 300, 15);
+        const uRes = await context.client.checkSlidingLimit('refresh', 'user', String(userId), 300, 15);
         if (!uRes.allowed) return { status: 'rejected', response: 'Too many requests' };
       } catch {}
       // Do not log refresh meta in production

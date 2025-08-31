@@ -5,10 +5,10 @@
     try {
       const ip = context.client.ip;
       const acct = String(email || '').toLowerCase().trim();
-      const ipRes = await context.sessionManager.checkSlidingLimit('signin', 'ip', ip, 60, 10);
+      const ipRes = await context.client.checkSlidingLimit('signin', 'ip', ip, 60, 10);
       if (!ipRes.allowed) return Object.assign(new Error('Too many requests'), { code: 'RATE_LIMITED', httpCode: 429 });
       if (acct) {
-        const acctRes = await context.sessionManager.checkSlidingLimit('signin', 'acct', acct, 60, 5);
+        const acctRes = await context.client.checkSlidingLimit('signin', 'acct', acct, 60, 5);
         if (!acctRes.allowed) return Object.assign(new Error('Too many requests'), { code: 'RATE_LIMITED', httpCode: 429 });
       }
     } catch {}

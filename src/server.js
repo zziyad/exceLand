@@ -142,6 +142,11 @@ class Client extends EventEmitter {
     return { ip: this.ip, userAgent: this.getUserAgent() };
   }
 
+  // Rate limit proxy to sessionManager
+  checkSlidingLimit(scope, dimension, id, windowSec, limit) {
+    return sessionManager.checkSlidingLimit(scope, dimension, id, windowSec, limit);
+  }
+
   async startSession(accessToken, refreshHash, refreshRaw, data = {}, options = {}) {
     try {
       // console.log(`Starting session for token: ${accessToken}`);
@@ -192,6 +197,10 @@ class Client extends EventEmitter {
 
   invalidateAccessSession(accessToken) {
     return sessionManager.invalidateAccessSession(accessToken);
+  }
+
+  checkSlidingLimit(key, type, value, ttl, max) {
+    return sessionManager.checkSlidingLimit(key, type, value, ttl, max);
   }
 
   destroy() {
