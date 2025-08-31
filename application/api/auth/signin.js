@@ -6,10 +6,24 @@
       const ip = context.client.ip;
       const acct = String(email || '').toLowerCase().trim();
       const ipRes = await context.client.checkSlidingLimit('signin', 'ip', ip, 60, 10);
-      if (!ipRes.allowed) return Object.assign(new Error('Too many requests'), { code: 'RATE_LIMITED', httpCode: 429 });
+      if (!ipRes.allowed) {
+        try { require('../../lib/logger.js').security('login-rate-limited', { ip, acct }); } catch {}
+        const err = new Error('Too many requests');
+        err.code = 'RATE_LIMITED';
+        err.httpCode = 429;
+        err.retryAfterSec = ipRes.retryAfterSec;
+        return err;
+      }
       if (acct) {
         const acctRes = await context.client.checkSlidingLimit('signin', 'acct', acct, 60, 5);
-        if (!acctRes.allowed) return Object.assign(new Error('Too many requests'), { code: 'RATE_LIMITED', httpCode: 429 });
+        if (!acctRes.allowed) {
+          try { require('../../lib/logger.js').security('login-rate-limited', { ip, acct }); } catch {}
+          const err = new Error('Too many requests');
+          err.code = 'RATE_LIMITED';
+          err.httpCode = 429;
+          err.retryAfterSec = acctRes.retryAfterSec;
+          return err;
+        }
       }
     } catch {}
     const { characters, secret, length } = config.sessions;
@@ -25,26 +39,32 @@
     try {
       // Get user by email
       const user = await lib.provider.getUser(email);
-      if (!user)
+      if (!user) {
+        try { require('../../lib/logger.js').security('login-failed', { email, ip: context.client.ip }); } catch {}
         return { status: 'rejected', response: 'Invalid email or password' };
+      }
 
       // Check if user is active
-      if (!user.is_active)
+      if (!user.is_active) {
+        try { require('../../lib/logger.js').security('login-failed', { email, ip: context.client.ip, reason: 'inactive' }); } catch {}
         return {
           status: 'rejected',
           response: 'Account is deactivated. Please contact administrator.',
         };
+      }
 
       // Verify password
       const ok = await metarhia.metautil.validatePassword(
         password,
         user.password_hash,
       );
-      if (!ok)
+      if (!ok) {
+        try { require('../../lib/logger.js').security('login-failed', { email, ip: context.client.ip }); } catch {}
         return {
           status: 'rejected',
           response: 'Invalid email or password',
         };
+      }
 
       // Get user roles and permissions
       const roles = await lib.provider.getUserRoles(user.id);
@@ -92,13 +112,15 @@
         sessionData,
         { createdBy: 'login' },
       );
-      if (!started)
+      if (!started) {
+        try { require('../../lib/logger.js').security('login-failed', { email, ip: context.client.ip, reason: 'session-start' }); } catch {}
         return {
           status: 'rejected',
           response: 'Failed to create session',
         };
+      }
 
-      console.log(`User logged in successfully: ${email} (ID: ${user.id})`);
+      try { require('../../lib/logger.js').security('login-success', { email, userId: user.id, ip: context.client.ip }); } catch {}
 
       return {
         status: 'logged',

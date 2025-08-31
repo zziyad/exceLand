@@ -46,7 +46,7 @@ class Transport {
     return this.req.headers[String(name || '').toLowerCase()];
   }
 
-  error(code = 500, { id, error = null, httpCode = null } = {}) {
+  error(code = 500, { id, error = null, httpCode = null, headers: extraHeaders = null } = {}) {
     const { console } = this.server;
     const { url, method } = this.req;
     if (!httpCode) httpCode = error?.httpCode || code;
@@ -56,7 +56,8 @@ class Transport {
     const reason = `${code}\t${error ? error.stack : status}`;
     console.error(`${this.ip}\t${method}\t${url}\t${reason}`);
     const packet = { type: 'callback', id, error: { message, code, status } };
-    this.send(packet, httpCode);
+    const data = JSON.stringify(packet);
+    this.write(data, httpCode, 'json', { headers: extraHeaders || undefined });
   }
 
   send(obj, code = 200) {
@@ -119,6 +120,9 @@ class HttpTransport extends Transport {
     headers['Content-Security-Policy'] = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
     if (this.server.isHttps === true) {
       headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubdomains; preload';
+    }
+    if (options?.headers && typeof options.headers === 'object') {
+      Object.assign(headers, options.headers);
     }
     if (httpCode === 206) {
       const { start, end, size = '*' } = options;

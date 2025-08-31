@@ -365,6 +365,12 @@ class SessionManager {
       const allowed = count <= Number(limit || 0);
       // Approximate retry-after if blocked
       const retryAfterSec = allowed ? 0 : Math.max(1, Math.floor(windowSec / 4));
+      if (!allowed) {
+        try {
+          const logger = require('../lib/logger.js');
+          logger.security('rate-limit', { scope, dimension, id, count, windowSec });
+        } catch {}
+      }
       return { allowed, count, retryAfterSec };
     } catch (err) {
       logger.error('checkSlidingLimit error', err);
