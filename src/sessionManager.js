@@ -36,6 +36,10 @@ class SessionManager {
     this.incrAsync = promisify(this.redis.incr).bind(this.redis);
     this.decrAsync = promisify(this.redis.decr).bind(this.redis);
     this.quitAsync = promisify(this.redis.quit).bind(this.redis);
+    this.zaddAsync = promisify(this.redis.zadd).bind(this.redis);
+    this.zremrangebyscoreAsync = promisify(this.redis.zremrangebyscore).bind(this.redis);
+    this.zcountAsync = promisify(this.redis.zcount).bind(this.redis);
+    this.expireAsync = promisify(this.redis.expire).bind(this.redis);
 
     this.metrics = {
       totalSessions: 0,
@@ -331,6 +335,40 @@ class SessionManager {
       if (this.isRedisReady()) await this.quitAsync();
     } catch (err) {
       logger.error('SessionManager close error', err);
+    }
+  }
+
+  // Build rate limit key
+  buildRateKey(scope, dimension, id) {
+    const safe = String(id || '').trim().toLowerCase();
+    return `rl:${scope}:${dimension}:${safe}`;
+  }
+
+  // Sliding window rate limit using Redis ZSET
+  // Returns { allowed, count, retryAfterSec }
+  async checkSlidingLimit(scope, dimension, id, windowSec, limit) {
+    try {
+      if (!this.isRedisReady()) return { allowed: true, count: 0, retryAfterSec: 0 };
+      const key = this.buildRateKey(scope, dimension, id);
+      const now = Date.now();
+      const windowMs = windowSec * 1000;
+      const minScore = now - windowMs;
+
+      // Clean old, add current, count current window, set TTL
+      const multi = this.redis.multi();
+      multi.zremrangebyscore(key, '-inf', `(${minScore}`);
+      multi.zadd(key, now, String(now));
+      multi.zcount(key, `(${minScore}`, now);
+      multi.expire(key, windowSec);
+      const replies = await this.execMulti(multi);
+      const count = Number(replies?.[2]) || 0;
+      const allowed = count <= Number(limit || 0);
+      // Approximate retry-after if blocked
+      const retryAfterSec = allowed ? 0 : Math.max(1, Math.floor(windowSec / 4));
+      return { allowed, count, retryAfterSec };
+    } catch (err) {
+      logger.error('checkSlidingLimit error', err);
+      return { allowed: true, count: 0, retryAfterSec: 0 };
     }
   }
 }

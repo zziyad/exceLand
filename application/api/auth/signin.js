@@ -1,6 +1,17 @@
 ({
   access: 'public',
   method: async ({ email, password }) => {
+    // Rate limit: per IP and per account (email)
+    try {
+      const ip = context.client.ip;
+      const acct = String(email || '').toLowerCase().trim();
+      const ipRes = await context.sessionManager.checkSlidingLimit('signin', 'ip', ip, 60, 10);
+      if (!ipRes.allowed) return Object.assign(new Error('Too many requests'), { code: 'RATE_LIMITED', httpCode: 429 });
+      if (acct) {
+        const acctRes = await context.sessionManager.checkSlidingLimit('signin', 'acct', acct, 60, 5);
+        if (!acctRes.allowed) return Object.assign(new Error('Too many requests'), { code: 'RATE_LIMITED', httpCode: 429 });
+      }
+    } catch {}
     const { characters, secret, length } = config.sessions;
     const { accessToken, refreshRaw, refreshHash } = common.makeTokens(secret);
     // console.log({ accessToken, refreshRaw, refreshHash });
