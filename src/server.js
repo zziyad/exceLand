@@ -199,9 +199,7 @@ class Client extends EventEmitter {
     return sessionManager.invalidateAccessSession(accessToken);
   }
 
-  checkSlidingLimit(key, type, value, ttl, max) {
-    return sessionManager.checkSlidingLimit(key, type, value, ttl, max);
-  }
+
 
   destroy() {
     this.emit('close');
@@ -237,6 +235,16 @@ class Server {
     if (!config?.sessions?.secret) {
       this.console.warn('Session secret is not configured. Access tokens cannot be validated.');
     }
+    // Validate CORS policy in production
+    try {
+      const env = process.env.NODE_ENV || 'development';
+      const allowed = config?.server?.cors?.allowedOrigins || [];
+      const hasWildcard = allowed.some((o) => o === '*' || /\*$/.test(o));
+      if (env === 'production' && (allowed.length === 0 || hasWildcard)) {
+        this.console.warn('Weak CORS policy in production');
+        try { require('../lib/logger.js').system('weak-cors', { allowed }); } catch {}
+      }
+    } catch {}
     this.listen(port);
     this.console.log(`API on port ${port} (${sslOptions ? 'HTTPS' : 'HTTP'})`);
   }

@@ -50,7 +50,10 @@
         try { context.client.clearSessionCookies(); } catch {}
         return { status: 'rejected', response: 'Refresh reuse detected' };
       }
-      if (meta.ip && meta.ip !== currentIp) {
+      // allow subnet match to reduce false positives behind NAT
+      const { sameSubnet } = common;
+      const maskBits = Number(context.config?.security?.ipSubnetMaskBits || 24);
+      if (meta.ip && !sameSubnet(meta.ip, currentIp, maskBits)) {
         try { await context.sessionManager.invalidateAllUserSessions(userId); } catch {}
         try { context.client.clearSessionCookies(); } catch {}
         return { status: 'rejected', response: 'Refresh reuse detected' };
