@@ -26,7 +26,23 @@
     wait: 2000,
     timeout: 5000,
   },
+  tls: {
+    enabled: false,
+    keyPath: '/etc/ssl/private/privkey.pem',
+    certPath: '/etc/ssl/private/fullchain.pem',
+    // caPath: '/etc/letsencrypt/live/example.com/chain.pem', // при необходимости
+    // publicPort: 443, // если redirect делаем на 443
+    redirectPort: 8000, // опционально: http-порт, который будет редиректить на https
+    allowedOrigins: ['https://app.example.com'], // для CORS
+  },
   cors: {
-    origin: '*',
+    allowedOrigins: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://localhost:3000',
+      'https://localhost:3001',
+    ],
+    allowCredentials: true,
+    maxAge: 86400,
   },
 });

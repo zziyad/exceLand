@@ -4,7 +4,7 @@
     try {
       const resourcesPath = node.path.join(application.path, './resources');
       const filePath = node.path.join(resourcesPath, 'report.csv');
-      const csvStream = node.fs.createWriteStream(filePath); 
+      const csvStream = node.fs.createWriteStream(filePath);
       const fileRead = `/home/zi/Documents/programming/divAcademy/server/${fileName}`;
       const data = await node.fsp.readFile(fileRead, 'utf8');
 

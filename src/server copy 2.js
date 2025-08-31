@@ -25,15 +25,14 @@ class Session {
   }
 }
 
+const sessions = new Map(); // token: Session
+
 class Context {
   constructor(client) {
     this.client = client;
     this.uuid = crypto.randomUUID();
     this.state = {};
-    // this.session = client.session || null;
-  }
-  get session() {
-    return this.client.session;
+    this.session = client?.session || null;
   }
 }
 
@@ -55,21 +54,6 @@ class Client extends EventEmitter {
     this.#transport.send(obj, code);
   }
 
-  clearSessionCookies() {
-    if (this.#transport && typeof this.#transport.clearSessionCookies === 'function') {
-      this.#transport.clearSessionCookies();
-    }
-  }
-
-  async invalidateAccessSession(token) {
-    try {
-      if (!token) return false;
-      return await sessionManager.invalidateAccessSession(token);
-    } catch {
-      return false;
-    }
-  }
-
   createContext() {
     return new Context(this);
   }
@@ -82,43 +66,25 @@ class Client extends EventEmitter {
     this.send({ type: 'event', name, data });
   }
 
-  // New middleware method for token validation
-  async validateAccessToken(accessToken) {
-    if (!accessToken) return null;
-
-    try {
-      // Verify token signature first
-      const { verifySignedToken } = require('../lib/common.js');
-      const appConfig = this.#transport?.server?.application?.config;
-      const secret = appConfig?.sessions?.secret;
-      if (!secret) {
-        console.warn('Session secret is not configured');
-        return null;
-      }
-      const randomBuf = verifySignedToken(secret, accessToken);
-
-      if (!randomBuf) {
-        console.log('Invalid token signature');
-        return null;
-      }
-
-      // Get session from Redis/memory
-      const sessionData = await sessionManager.getAccessSession(accessToken);
-      if (!sessionData) {
-        console.log('Session not found or expired');
-        return null;
-      }
-
-      return sessionData;
-    } catch (error) {
-      console.error('Token validation error:', error);
-      return null;
-    }
+  initializeSession(token, data = {}) {
+    this.finalizeSession();
+    this.session = new Session(token, data);
+    sessions.set(token, this.session);
+    return true;
   }
 
-  // Public method to get cookies from transport
-  getCookies() {
-    return this.#transport.getCookies();
+  finalizeSession() {
+    if (!this.session) return false;
+    sessions.delete(this.session.token);
+    this.session = null;
+    return true;
+  }
+
+  restoreSession(token) {
+    const session = sessions.get(token);
+    if (!session) return false;
+    this.session = session;
+    return true;
   }
 
   async startSession(accessToken, refreshHash, refreshRaw, data = {}) {
@@ -126,12 +92,11 @@ class Client extends EventEmitter {
       // console.log(`Starting session for token: ${accessToken}`);
       // await this.initializeSession(accessToken, data);
       await sessionManager.createAccessSession(accessToken, data);
-      // Store refresh mapped to user id
-      await sessionManager.createRefreshTokenByHash(refreshHash, data.id, {
-        createdBy: 'login',
-      });
-
-      this.session = new Session(accessToken, data);
+      await sessionManager.createRefreshTokenByHash(
+        refreshHash,
+        data.sessionId,
+        { createdBy: 'login' },
+      );
 
       if (!this.#transport.connection) {
         console.log('Sending session cookie');
@@ -154,22 +119,10 @@ class Client extends EventEmitter {
       return false;
     }
   }
-
-  getRefreshByRaw(refreshRaw) {
-    return sessionManager.getRefreshByRaw(refreshRaw);
-  }
-
-  invalidateRefreshByRaw(refreshRaw) {
-    return sessionManager.invalidateRefreshByRaw(refreshRaw);
-  }
-
-  invalidateAccessSession(accessToken) {
-    return sessionManager.invalidateAccessSession(accessToken);
-  }
-
   destroy() {
     this.emit('close');
-    this.session = null;
+    if (!this.session) return;
+    this.finalizeSession();
   }
 }
 
@@ -187,44 +140,40 @@ class Server {
 
     if (sslOptions) {
       this.httpServer = https.createServer(sslOptions);
-      this.isHttps = true;
       this.console.log('HTTPS server created with SSL certificates');
     } else {
-      console.log('No SSL certificates found');
       this.httpServer = http.createServer();
-      this.isHttps = false;
       this.console.log('HTTP server created (no SSL certificates found)');
     }
 
     const [port] = config.server.ports;
-    // Guard: ensure session secret is configured
-    if (!config?.sessions?.secret) {
-      this.console.warn('Session secret is not configured. Access tokens cannot be validated.');
-    }
     this.listen(port);
     this.console.log(`API on port ${port} (${sslOptions ? 'HTTPS' : 'HTTP'})`);
   }
 
   getSSLOptions() {
     try {
-      const tls = this.application?.config?.server?.tls;
-      if (tls?.enabled && tls.certPath && tls.keyPath) {
-        if (fs.existsSync(tls.certPath) && fs.existsSync(tls.keyPath)) {
-          return {
-            cert: fs.readFileSync(tls.certPath),
-            key: fs.readFileSync(tls.keyPath),
-          };
-        }
+      const certPath = path.join(process.cwd(), 'ssl', 'cert.pem');
+      const keyPath = path.join(process.cwd(), 'ssl', 'key.pem');
+
+      if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+        return {
+          cert: fs.readFileSync(certPath),
+          key: fs.readFileSync(keyPath),
+        };
       }
-      // Fallback to dev paths if present
-      const devCertPath = path.join(process.cwd(), 'certs-old', 'cert.pem');
-      const devKeyPath = path.join(process.cwd(), 'certs-old', 'key.pem');
+
+      // Alternative paths for development
+      const devCertPath = path.join(process.cwd(), 'certs', 'cert.pem');
+      const devKeyPath = path.join(process.cwd(), 'certs', 'key.pem');
+
       if (fs.existsSync(devCertPath) && fs.existsSync(devKeyPath)) {
         return {
           cert: fs.readFileSync(devCertPath),
           key: fs.readFileSync(devKeyPath),
         };
       }
+
       return null;
     } catch (error) {
       console.warn('SSL certificate loading failed:', error.message);
@@ -234,27 +183,20 @@ class Server {
 
   listen(port) {
     this.httpServer.on('request', async (req, res) => {
+      if (req.url.includes('api') && !req.url.startsWith('/api')) {
+        req.url = extractPath(req.url);
+        return;
+      }
       const transport = new HttpTransport(this, req, res);
       if (!req.url.startsWith('/api'))
         return void this.application.static.serve(req.url, transport);
 
-      // Handle CORS preflight: HttpTransport already responded
-      if (req.method === 'OPTIONS') return;
-
       const client = new Client(transport);
       const data = await receiveBody(req);
       this.rpc(client, data);
-      // For HTTP requests, destroy client after response is sent
+
       req.on('close', () => {
-        // Only destroy if no active session or if session is already stored in Redis
-        if (!client.session) {
-          client.destroy();
-        } else {
-          console.log(
-            `Preserving session for HTTP client: ${client.session.token}`,
-          );
-          // Don't destroy - let the session manager handle cleanup
-        }
+        client.destroy();
       });
     });
 
@@ -275,7 +217,7 @@ class Server {
     this.httpServer.listen(port);
   }
 
-  async rpc(client, data) {
+  rpc(client, data) {
     const packet = jsonParse(data);
     if (!packet) {
       const error = new Error('JSON parsing error');
@@ -296,47 +238,11 @@ class Server {
       return;
     }
     const context = client.createContext();
-    // expose app-level singletons in context
-    context.sessionManager = sessionManager;
-    context.config = this.application.config;
-
-    // Debug context information can be added here if needed
-
-    // Run authentication middleware for protected endpoints
-    if (proc().access !== 'public') {
-      try {
-        // Get auth token from cookies
-        const cookies = client.getCookies();
-        const accessToken = cookies['auth-token'];
-
-        if (!accessToken) {
-          client.error(401, {
-            id,
-            error: { message: 'Authentication required' },
-          });
-          return;
-        }
-
-        // Validate token and get session data
-        const sessionData = await client.validateAccessToken(accessToken);
-        if (!sessionData) {
-          client.error(401, {
-            id,
-            error: { message: 'Invalid or expired token' },
-          });
-          return;
-        }
-
-        // Set session in client
-        client.session = new Session(accessToken, sessionData);
-        this.console.log(`Auth OK ${client.ip}\tuser=${sessionData.id}`);
-      } catch (error) {
-        console.error('Auth check error:', error);
-        client.error(500, { id, error: { message: 'Authentication error' } });
-        return;
-      }
-    }
-
+    /* TODO: check rights
+    if (!client.session && proc.access !== 'public') {
+      client.error(403, { id });
+      return;
+    }*/
     this.console.log(`${client.ip}\t${packet.method}`);
     proc(context)
       .method(packet.args)
