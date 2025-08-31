@@ -3,7 +3,7 @@
   method: async ({ email, password }) => {
     const { characters, secret, length } = config.sessions;
     const { accessToken, refreshRaw, refreshHash } = common.makeTokens(secret);
-    console.log({ accessToken, refreshRaw, refreshHash });
+    // console.log({ accessToken, refreshRaw, refreshHash });
 
     if (!email || !password)
       return {
@@ -38,9 +38,6 @@
       // Get user roles and permissions
       const roles = await lib.provider.getUserRoles(user.id);
       const permissions = await lib.provider.getUserPermissions(user.id);
-
-      // Generate token
-      // const token = metarhia.metautil.generateToken(secret, characters, length);
 
       // Update last login time
       try {
@@ -77,12 +74,18 @@
       };
 
       // Start session using the session manager
-      await context.client.startSession(
+      const started = await context.client.startSession(
         accessToken,
         refreshHash,
         refreshRaw,
         sessionData,
+        { createdBy: 'login' },
       );
+      if (!started)
+        return {
+          status: 'rejected',
+          response: 'Failed to create session',
+        };
 
       console.log(`User logged in successfully: ${email} (ID: ${user.id})`);
 

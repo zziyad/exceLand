@@ -1,15 +1,32 @@
 ({
   access: 'public', // Make logout idempotent: clear if present, succeed regardless
   method: async () => {
-    try {
-      const accessToken = context.client.getCookies()['auth-token'] || context.client.session?.token;
-      if (accessToken) {
-        try { await context.client.invalidateAccessSession(accessToken); } catch {}
+    try {      const cookies = context.client.getCookies();
+      const accessToken = cookies['auth-token'] || context.client.session?.token;
+      const refreshRaw = cookies['refresh-token'];
+
+      // Try to detect userId for full logout
+      let userId = context.client.session?.state?.id;
+      if (!userId && accessToken) {
+        try {
+          const s = await context.client.validateAccessToken(accessToken);
+          if (s?.id) userId = s.id;
+        } catch {}
+      }
+      if (!userId && refreshRaw) {
+        try {
+          const r = await context.client.getRefreshByRaw(refreshRaw);
+          if (r?.data?.userId) userId = r.data.userId;
+        } catch {}
       }
 
-      const refreshRaw = context.client.getCookies()['refresh-token'];
-      if (refreshRaw) {
-        try { await context.client.invalidateRefreshByRaw(refreshRaw); } catch {}
+      if (userId) {
+        // Global logout: invalidate all sessions for this user
+        try { await context.sessionManager.invalidateAllUserSessions(userId); } catch {}
+      } else {
+        // Fallback: invalidate what we know
+        if (accessToken) { try { await context.client.invalidateAccessSession(accessToken); } catch {} }
+        if (refreshRaw) { try { await context.client.invalidateRefreshByRaw(refreshRaw); } catch {} }
       }
 
       // Always clear cookies (handles cases when tokens were already missing)

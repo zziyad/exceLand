@@ -121,15 +121,42 @@ class Client extends EventEmitter {
     return this.#transport.getCookies();
   }
 
-  async startSession(accessToken, refreshHash, refreshRaw, data = {}) {
+  // Header proxies
+  getHeader(name) {
+    return this.#transport.getHeader(name);
+  }
+
+  getOrigin() {
+    return this.#transport.getOrigin?.();
+  }
+
+  getReferrer() {
+    return this.#transport.getReferrer?.();
+  }
+
+  getUserAgent() {
+    return this.#transport.getUserAgent?.();
+  }
+
+  getRequestMeta() {
+    return { ip: this.ip, userAgent: this.getUserAgent() };
+  }
+
+  async startSession(accessToken, refreshHash, refreshRaw, data = {}, options = {}) {
     try {
       // console.log(`Starting session for token: ${accessToken}`);
       // await this.initializeSession(accessToken, data);
       await sessionManager.createAccessSession(accessToken, data);
       // Store refresh mapped to user id
-      await sessionManager.createRefreshTokenByHash(refreshHash, data.id, {
-        createdBy: 'login',
-      });
+      const { hashTokenHex } = require('../lib/common.js');
+      const ua = this.getUserAgent() || '';
+      const uaHash = hashTokenHex(ua);
+      const meta = {
+        createdBy: options.createdBy || 'login',
+        ip: this.ip,
+        uaHash,
+      };
+      await sessionManager.createRefreshTokenByHash(refreshHash, data.id, meta);
 
       this.session = new Session(accessToken, data);
 
@@ -280,6 +307,38 @@ class Server {
     if (!packet) {
       const error = new Error('JSON parsing error');
       client.error(500, { error, pass: true });
+      return;
+    }
+    // CSRF hardening: require allowed Origin/Referer and X-Requested-With
+    const origin = client.getOrigin?.();
+    const referer = client.getReferrer?.();
+    const xrw = client.getHeader?.('x-requested-with');
+    const allowed = this.application?.config?.server?.cors?.allowedOrigins || [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+    ];
+    const allowedSet = new Set(allowed);
+    const extractOrigin = (url) => {
+      try {
+        const u = new URL(url);
+        return `${u.protocol}//${u.host}`;
+      } catch {
+        return null;
+      }
+    };
+    if (origin && !allowedSet.has(origin)) {
+      client.error(403, { error: { message: 'Forbidden origin' }, httpCode: 403 });
+      return;
+    }
+    if (!origin && referer) {
+      const refOrigin = extractOrigin(referer);
+      if (refOrigin && !allowedSet.has(refOrigin)) {
+        client.error(403, { error: { message: 'Forbidden referer' }, httpCode: 403 });
+        return;
+      }
+    }
+    if (xrw !== 'XMLHttpRequest') {
+      client.error(403, { error: { message: 'X-Requested-With required' }, httpCode: 403 });
       return;
     }
     const { id, type, args } = packet;

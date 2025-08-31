@@ -15,7 +15,7 @@
 
       // Get refresh token data from Redis
       const refreshData = await context.client.getRefreshByRaw(refreshRaw);
-      console.log('refreshRaw', refreshRaw, refreshData);
+      // Do not log raw tokens
       if (!refreshData) {
         return {
           status: 'rejected',
@@ -24,8 +24,25 @@
       }
 
       const { data: refreshInfo, refreshHash } = refreshData;
-      console.log('refreshInfo', refreshInfo);
+      // Do not log refresh meta in production
       const userId = refreshInfo.userId;
+
+      // Bind & detect reuse: compare UA/IP
+      const { hashTokenHex } = common;
+      const meta = refreshInfo.meta || {};
+      const currentUa = context.client.getUserAgent?.() || '';
+      const currentUaHash = hashTokenHex(currentUa);
+      const currentIp = context.client.ip;
+      if (meta.uaHash && meta.uaHash !== currentUaHash) {
+        try { await context.sessionManager.invalidateAllUserSessions(userId); } catch {}
+        try { context.client.clearSessionCookies(); } catch {}
+        return { status: 'rejected', response: 'Refresh reuse detected' };
+      }
+      if (meta.ip && meta.ip !== currentIp) {
+        try { await context.sessionManager.invalidateAllUserSessions(userId); } catch {}
+        try { context.client.clearSessionCookies(); } catch {}
+        return { status: 'rejected', response: 'Refresh reuse detected' };
+      }
 
       // Get user data
       const user = await lib.provider.getUserById(userId);
@@ -39,6 +56,12 @@
       // Get user roles and permissions
       const roles = await lib.provider.getUserRoles(user.id);
       const permissions = await lib.provider.getUserPermissions(user.id);
+
+      // Revoke old access if present to reduce attack window
+      const oldAccess = cookies['auth-token'];
+      if (oldAccess) {
+        try { await context.client.invalidateAccessSession(oldAccess); } catch {}
+      }
 
       // Generate new tokens
       const { characters, secret, length } = config.sessions;
@@ -70,12 +93,13 @@
         sessionId: context.uuid,
       };
 
-      // Start new session
+      // Start new session (meta will be captured inside startSession)
       await context.client.startSession(
         accessToken,
         newRefreshHash,
         newRefreshRaw,
         sessionData,
+        { createdBy: 'refresh' },
       );
 
       // Invalidate old refresh token (rotation)

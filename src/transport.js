@@ -19,8 +19,8 @@ const MIME_TYPES = {
 const HEADERS = {
   'X-XSS-Protection': '1; mode=block',
   'X-Content-Type-Options': 'nosniff',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubdomains; preload',
-  'Access-Control-Allow-Origin': 'http://localhost:3000',
+  // HSTS will be added conditionally for HTTPS responses
+  // ACAO will be added dynamically when origin is allowed
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
   'Access-Control-Allow-Headers':
     'Content-Type, Authorization, X-Requested-With, Accept, Origin',
@@ -40,6 +40,10 @@ class Transport {
     this.server = server;
     this.req = req;
     this.ip = req.socket.remoteAddress;
+  }
+
+  getHeader(name) {
+    return this.req.headers[String(name || '').toLowerCase()];
   }
 
   error(code = 500, { id, error = null, httpCode = null } = {}) {
@@ -87,6 +91,12 @@ class HttpTransport extends Transport {
       corsHeaders['Access-Control-Allow-Origin'] = origin;
       corsHeaders['Vary'] = 'Origin';
     }
+    // Security headers on preflight
+    corsHeaders['X-Frame-Options'] = 'DENY';
+    corsHeaders['Content-Security-Policy'] = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
+    if (this.server.isHttps === true) {
+      corsHeaders['Strict-Transport-Security'] = 'max-age=31536000; includeSubdomains; preload';
+    }
     res.writeHead(204, corsHeaders);
     res.end();
   }
@@ -105,6 +115,11 @@ class HttpTransport extends Transport {
       headers['Access-Control-Allow-Origin'] = origin;
       headers['Vary'] = 'Origin';
     }
+    headers['X-Frame-Options'] = 'DENY';
+    headers['Content-Security-Policy'] = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
+    if (this.server.isHttps === true) {
+      headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubdomains; preload';
+    }
     if (httpCode === 206) {
       const { start, end, size = '*' } = options;
       headers['Content-Range'] = `bytes ${start}-${end}/${size}`;
@@ -121,6 +136,18 @@ class HttpTransport extends Transport {
     const { cookie } = this.req.headers;
     if (!cookie) return {};
     return metautil.parseCookies(cookie);
+  }
+
+  getOrigin() {
+    return this.req.headers.origin;
+  }
+
+  getReferrer() {
+    return this.req.headers.referer || this.req.headers.referrer;
+  }
+
+  getUserAgent() {
+    return this.req.headers['user-agent'] || '';
   }
 
   // sendSessionCookie(token) {

@@ -27,6 +27,7 @@ class SessionManager {
 
     // Promisified Redis v3 methods
     this.getAsync = promisify(this.redis.get).bind(this.redis);
+    this.setAsync = promisify(this.redis.set).bind(this.redis);
     this.delAsync = promisify(this.redis.del).bind(this.redis);
     this.expireAsync = promisify(this.redis.expire).bind(this.redis);
     this.smembersAsync = promisify(this.redis.smembers).bind(this.redis);
@@ -125,6 +126,8 @@ class SessionManager {
         // keep a counter for analytics instead of KEYS
         multi.incr('metrics:activeSessions');
         await this.execMulti(multi);
+        // Debug: confirm created (no tokens logged)
+        try { logger.system('createAccessSession ok', { userId: data.id }); } catch {}
       } else {
         throw new Error('Redis is not ready');
       }
@@ -252,11 +255,29 @@ class SessionManager {
     try {
       if (!this.isRedisReady()) return false;
       const { hashTokenHex } = require('../lib/common');
-      const refreshHash = hashTokenHex(refreshRaw);
-      const raw = await this.getAsync(`refresh:${refreshHash}`);
-      if (!raw) return false;
-      const parsed = JSON.parse(raw);
-      const userId = parsed.userId;
+      // Try robust lookup (same normalization as getRefreshByRaw)
+      const toBase64 = (val) => {
+        let s = typeof val === 'string' ? val : String(val || '');
+        if (s.includes('%')) s = decodeURIComponent(s);
+        s = s.replace(/ /g, '+');
+        s = s.replace(/-/g, '+').replace(/_/g, '/');
+        while (s.length % 4 !== 0) s += '=';
+        return s;
+      };
+      const candidates = new Set([String(refreshRaw || ''), toBase64(refreshRaw)]);
+      let refreshHash = null;
+      let payload = null;
+      for (const candidate of candidates) {
+        const h = hashTokenHex(candidate);
+        const raw = await this.getAsync(`refresh:${h}`);
+        if (raw) {
+          refreshHash = h;
+          payload = JSON.parse(raw);
+          break;
+        }
+      }
+      if (!refreshHash) return false;
+      const userId = payload?.userId;
       const multi = this.redis.multi();
       multi.del(`refresh:${refreshHash}`);
       if (userId) multi.srem(`user_refreshs:${userId}`, refreshHash);
@@ -280,7 +301,14 @@ class SessionManager {
           const multi = this.redis.multi();
           for (const k of keys) multi.del(k);
           multi.del(sKey);
+          // decrement metrics counter by number of deleted sessions
+          if (accessTokens.length > 0) multi.decrby('metrics:activeSessions', accessTokens.length);
           await this.execMulti(multi);
+          // clamp to 0 to avoid negative metrics
+          try {
+            const cur = Number(await this.getAsync('metrics:activeSessions'));
+            if (Number.isFinite(cur) && cur < 0) await this.setAsync('metrics:activeSessions', '0');
+          } catch {}
         }
         const refreshHashes = await this.smembersAsync(rKey);
         if (refreshHashes && refreshHashes.length) {
