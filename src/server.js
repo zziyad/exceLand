@@ -12,12 +12,6 @@ const transport = require('./transport.js');
 const { HttpTransport, WsTransport, MIME_TYPES, HEADERS } = transport;
 const { SessionManager } = require('./sessionManager.js');
 
-// Initialize session manager
-const sessionManager = new SessionManager();
-
-const ACCESS_TTL = sessionManager.accessTtl;
-const REFRESH_TTL = sessionManager.refreshTtl;
-
 class Session {
   constructor(token, data) {
     this.token = token;
@@ -47,6 +41,10 @@ class Client extends EventEmitter {
     this.session = null;
   }
 
+  get sessionManager() {
+    return this.#transport?.server?.sessionManager;
+  }
+
   error(code, options) {
     this.#transport.error(code, options);
   }
@@ -56,7 +54,10 @@ class Client extends EventEmitter {
   }
 
   clearSessionCookies() {
-    if (this.#transport && typeof this.#transport.clearSessionCookies === 'function') {
+    if (
+      this.#transport &&
+      typeof this.#transport.clearSessionCookies === 'function'
+    ) {
       this.#transport.clearSessionCookies();
     }
   }
@@ -64,7 +65,7 @@ class Client extends EventEmitter {
   async invalidateAccessSession(token) {
     try {
       if (!token) return false;
-      return await sessionManager.invalidateAccessSession(token);
+      return await this.sessionManager.invalidateAccessSession(token);
     } catch {
       return false;
     }
@@ -103,7 +104,7 @@ class Client extends EventEmitter {
       }
 
       // Get session from Redis/memory
-      const sessionData = await sessionManager.getAccessSession(accessToken);
+      const sessionData = await this.sessionManager.getAccessSession(accessToken);
       if (!sessionData) {
         console.log('Session not found or expired');
         return null;
@@ -145,14 +146,27 @@ class Client extends EventEmitter {
 
   // Rate limit proxy to sessionManager
   checkSlidingLimit(scope, dimension, id, windowSec, limit) {
-    return sessionManager.checkSlidingLimit(scope, dimension, id, windowSec, limit);
+    return this.sessionManager.checkSlidingLimit(
+      scope,
+      dimension,
+      id,
+      windowSec,
+      limit,
+    );
   }
 
-  async startSession(accessToken, refreshHash, refreshRaw, data = {}, options = {}) {
+  async startSession(
+    accessToken,
+    refreshHash,
+    refreshRaw,
+    data = {},
+    options = {},
+  ) {
     try {
       // console.log(`Starting session for token: ${accessToken}`);
       // await this.initializeSession(accessToken, data);
-      await sessionManager.createAccessSession(accessToken, data);
+      const sm = this.sessionManager;
+      await sm.createAccessSession(accessToken, data);
       // Store refresh mapped to user id
       const { hashTokenHex } = require('../lib/common.js');
       const { normalizeIp } = require('../lib/common.js');
@@ -163,7 +177,7 @@ class Client extends EventEmitter {
         ip: normalizeIp(this.ip),
         uaHash,
       };
-      await sessionManager.createRefreshTokenByHash(refreshHash, data.id, meta);
+      await sm.createRefreshTokenByHash(refreshHash, data.id, meta);
 
       this.session = new Session(accessToken, data);
 
@@ -172,8 +186,8 @@ class Client extends EventEmitter {
         this.#transport.sendSessionCookie(
           accessToken,
           refreshRaw,
-          ACCESS_TTL,
-          REFRESH_TTL,
+          sm.accessTtl,
+          sm.refreshTtl,
         );
       }
       // console.log(`Session started successfully for token: ${token}`);
@@ -190,21 +204,20 @@ class Client extends EventEmitter {
   }
 
   getRefreshByRaw(refreshRaw) {
-    return sessionManager.getRefreshByRaw(refreshRaw);
+    return this.sessionManager.getRefreshByRaw(refreshRaw);
   }
 
   invalidateRefreshByRaw(refreshRaw) {
-    return sessionManager.invalidateRefreshByRaw(refreshRaw);
+    return this.sessionManager.invalidateRefreshByRaw(refreshRaw);
   }
 
   invalidateAccessSession(accessToken) {
-    return sessionManager.invalidateAccessSession(accessToken);
+    return this.sessionManager.invalidateAccessSession(accessToken);
   }
 
   invalidateAllUserSessions(userId) {
-    return sessionManager.invalidateAllUserSessions(userId);
+    return this.sessionManager.invalidateAllUserSessions(userId);
   }
-
 
   destroy() {
     this.emit('close');
@@ -238,7 +251,9 @@ class Server {
     const [port] = config.server.ports;
     // Guard: ensure session secret is configured
     if (!config?.sessions?.secret) {
-      this.console.warn('Session secret is not configured. Access tokens cannot be validated.');
+      this.console.warn(
+        'Session secret is not configured. Access tokens cannot be validated.',
+      );
     }
     // Validate CORS policy in production
     try {
@@ -247,8 +262,25 @@ class Server {
       const hasWildcard = allowed.some((o) => o === '*' || /\*$/.test(o));
       if (env === 'production' && (allowed.length === 0 || hasWildcard)) {
         this.console.warn('Weak CORS policy in production');
-        try { require('../lib/logger.js').system('weak-cors', { allowed }); } catch {}
+        try {
+          require('../lib/logger.js').system('weak-cors', { allowed });
+        } catch {}
       }
+    } catch {}
+    // Create a fresh SessionManager bound to this server instance
+    const sCfg = (config && config.sessions) || {};
+    const parsedAccess = Number(process.env.ACCESS_TOKEN_TTL);
+    const parsedRefresh = Number(process.env.REFRESH_TOKEN_TTL);
+    this.sessionManager = new SessionManager({
+      accessTtl:
+        (typeof sCfg.accessTtl === 'number' ? sCfg.accessTtl : undefined) ??
+        (Number.isFinite(parsedAccess) ? parsedAccess : undefined),
+      refreshTtl:
+        (typeof sCfg.refreshTtl === 'number' ? sCfg.refreshTtl : undefined) ??
+        (Number.isFinite(parsedRefresh) ? parsedRefresh : undefined),
+    });
+    try {
+      console.log('[sessions] ACCESS_TTL(s)=', this.sessionManager.accessTtl, 'REFRESH_TTL(s)=', this.sessionManager.refreshTtl);
     } catch {}
     this.listen(port);
     this.console.log(`API on port ${port} (${sslOptions ? 'HTTPS' : 'HTTP'})`);
@@ -284,6 +316,27 @@ class Server {
   listen(port) {
     this.httpServer.on('request', async (req, res) => {
       const transport = new HttpTransport(this, req, res);
+      
+      // Handle dedicated refresh endpoint
+      if (req.url === '/api/auth/refresh' && req.method === 'POST') {
+        const client = new Client(transport);
+        const data = await receiveBody(req);
+        // Create a special packet for refresh
+        const refreshPacket = {
+          type: 'call',
+          id: 'refresh',
+          method: 'auth/refresh',
+          args: {}
+        };
+        this.rpc(client, JSON.stringify(refreshPacket));
+        req.on('close', () => {
+          if (!client.session) {
+            client.destroy();
+          }
+        });
+        return;
+      }
+      
       if (!req.url.startsWith('/api'))
         return void this.application.static.serve(req.url, transport);
 
@@ -349,18 +402,27 @@ class Server {
       }
     };
     if (origin && !allowedSet.has(origin)) {
-      client.error(403, { error: { message: 'Forbidden origin' }, httpCode: 403 });
+      client.error(403, {
+        error: { message: 'Forbidden origin', code: 'CSRF_FORBIDDEN' },
+        httpCode: 403,
+      });
       return;
     }
     if (!origin && referer) {
       const refOrigin = extractOrigin(referer);
       if (refOrigin && !allowedSet.has(refOrigin)) {
-        client.error(403, { error: { message: 'Forbidden referer' }, httpCode: 403 });
+        client.error(403, {
+          error: { message: 'Forbidden referer', code: 'CSRF_FORBIDDEN' },
+          httpCode: 403,
+        });
         return;
       }
     }
     if (xrw !== 'XMLHttpRequest') {
-      client.error(403, { error: { message: 'X-Requested-With required' }, httpCode: 403 });
+      client.error(403, {
+        error: { message: 'X-Requested-With required', code: 'CSRF_FORBIDDEN' },
+        httpCode: 403,
+      });
       return;
     }
     const { id, type, args } = packet;
@@ -378,7 +440,7 @@ class Server {
     }
     const context = client.createContext();
     // expose app-level singletons in context
-    context.sessionManager = sessionManager;
+    context.sessionManager = this.sessionManager;
     context.config = this.application.config;
 
     // Debug context information can be added here if needed
@@ -393,7 +455,10 @@ class Server {
         if (!accessToken) {
           client.error(401, {
             id,
-            error: { message: 'Authentication required' },
+            error: {
+              message: 'Authentication required',
+              code: 'AUTH_REQUIRED',
+            },
           });
           return;
         }
@@ -403,7 +468,10 @@ class Server {
         if (!sessionData) {
           client.error(401, {
             id,
-            error: { message: 'Invalid or expired token' },
+            error: {
+              message: 'Invalid or expired token',
+              code: 'INVALID_TOKEN',
+            },
           });
           return;
         }
@@ -423,8 +491,11 @@ class Server {
       .method(packet.args)
       .then((result) => {
         if (result?.constructor?.name === 'Error') {
-          const { code, httpCode = 200 } = result;
-          client.error(code, { id, error: result, httpCode });
+          const { code, httpCode = 200, retryAfterSec } = result;
+          const headers = retryAfterSec
+            ? { 'Retry-After': String(retryAfterSec) }
+            : undefined;
+          client.error(code, { id, error: result, httpCode, headers });
           return;
         }
         client.send({ type: 'callback', id, result });
