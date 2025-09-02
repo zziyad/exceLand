@@ -1,30 +1,51 @@
-version: '3'
-
 services:
-  api-exceland:
+  api-auth:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: api-exceland
+    container_name: api-auth
     environment:
-      - DB_HOST=pg-exceland
-      - REDIS_HOST=redis-exceland
+      - DB_HOST=pg-auth
+      - REDIS_HOST=redis-auth
     volumes:
       - ./:/usr/server/
     depends_on:
-      - pg-exceland
-      - redis-exceland
-    ports:
-      - 0.0.0.0:80:8001
+      - pg-auth
+      - redis-auth
     restart: always
 
-  pg-exceland:
+  next-auth:
+    build:
+      context: ../auth-next
+      dockerfile: Dockerfile
+    container_name: next-auth
+    environment:
+      - NODE_ENV=production
+    restart: always
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: nginx-auth
+    depends_on:
+      - api-auth
+      - next-auth
+    ports:
+      - 0.0.0.0:8080:80
+      - 0.0.0.0:8443:443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs
+      - certbot-www:/var/www/certbot
+      - certbot-conf:/etc/letsencrypt
+    restart: always
+
+  pg-auth:
     image: postgres:16.1-alpine3.19
-    container_name: pg-exceland
+    container_name: pg-auth
     environment:
       - POSTGRES_USER=marcus
       - POSTGRES_PASSWORD=marcus
-      - POSTGRES_DB=exceland
+      - POSTGRES_DB=auth
     volumes:
       - ./data/postgres/:/var/lib/postgresql/data
       - ./database/structure.sql:/docker-entrypoint-initdb.d/1.sql
@@ -33,11 +54,9 @@ services:
       - 127.0.0.1:5433:5432
     restart: always
 
-  redis-exceland:
+  redis-auth:
     image: redis:7-alpine
-    container_name: redis-exceland
-    ports:
-      - 127.0.0.1:6379:6379
+    container_name: redis-auth
     restart: always
 
   pgadmin:
@@ -49,11 +68,22 @@ services:
     ports:
       - 0.0.0.0:5050:80
     volumes:
-      - ./exceland.backup:/pgadmin4/exceland.backup
+      - ./auth.backup:/pgadmin4/auth.backup
     depends_on:
-      - pg-exceland
+      - pg-auth
     restart: always
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-conf:/etc/letsencrypt
+    entrypoint: sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done"
 
 networks:
   default:
-    name: api-exceland-network
+    name: my-network
+volumes:
+  certbot-www:
+  certbot-conf:

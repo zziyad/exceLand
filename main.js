@@ -36,8 +36,8 @@ const sandbox = node.vm.createContext({
   const lib = new Code('lib', application);
   const domain = new Code('domain', application);
   application.static = new Static('static', application);
-  application.watcher = new DirectoryWatcher({ timeout: 1000 }),
-  await lib.load();
+  (application.watcher = new DirectoryWatcher({ timeout: 1000 })),
+    await lib.load();
   await domain.load();
   await config.load();
   Object.assign(sandbox, {

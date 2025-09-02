@@ -1,7 +1,7 @@
 ({
   access: 'public',
   method: async ({ username, password, email }) => {
-    console.log({ username, password, email, 'PROVIDER': api.auth });
+    console.log({ username, password, email, PROVIDER: api.auth });
     try {
       const { getUser, registerUser } = api.auth.provider();
       const user = await getUser(email);

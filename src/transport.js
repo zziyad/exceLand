@@ -4,6 +4,7 @@
 const http = require('node:http');
 const metautil = require('metautil');
 const { Readable } = require('node:stream');
+const { buildCookieHeader } = require('../lib/common.js');
 
 const MIME_TYPES = {
   html: 'text/html; charset=UTF-8',
@@ -18,18 +19,22 @@ const MIME_TYPES = {
 const HEADERS = {
   'X-XSS-Protection': '1; mode=block',
   'X-Content-Type-Options': 'nosniff',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubdomains; preload',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type Authorization',
+  // HSTS will be added conditionally for HTTPS responses
+  // ACAO will be added dynamically when origin is allowed
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
+  'Access-Control-Allow-Headers':
+    'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+  'Access-Control-Allow-Credentials': 'true',
+  'Access-Control-Max-Age': '86400',
 };
 
-// const TOKEN = 'token';
+// RFC cookies expect GMT format
 const EPOCH = 'Thu, 01 Jan 1970 00:00:00 GMT';
-const FUTURE = 'Fri, 01 Jan 2100 00:00:00 GMT';
+// const FUTURE = 'Fri, 01 Jan 2100 00:00:00 GMT';
 const LOCATION = 'Path=/; Domain';
 // const COOKIE_DELETE = `${TOKEN}=deleted; Expires=${EPOCH}; ${LOCATION}=`;
-const COOKIE_HOST = `Expires=${FUTURE}; ${LOCATION}`;
+// const COOKIE_HOST = `Expires=${FUTURE}; ${LOCATION}`;
+const COOKIE_HOST = 'Expires=Fri, 01 Jan 2100 00:00:00 GMT; Path=/; Domain';
 
 class Transport {
   constructor(server, req) {
@@ -38,7 +43,14 @@ class Transport {
     this.ip = req.socket.remoteAddress;
   }
 
-  error(code = 500, { id, error = null, httpCode = null } = {}) {
+  getHeader(name) {
+    return this.req.headers[String(name || '').toLowerCase()];
+  }
+
+  error(
+    code = 500,
+    { id, error = null, httpCode = null, headers: extraHeaders = null } = {},
+  ) {
     const { console } = this.server;
     const { url, method } = this.req;
     if (!httpCode) httpCode = error?.httpCode || code;
@@ -48,7 +60,8 @@ class Transport {
     const reason = `${code}\t${error ? error.stack : status}`;
     console.error(`${this.ip}\t${method}\t${url}\t${reason}`);
     const packet = { type: 'callback', id, error: { message, code, status } };
-    this.send(packet, httpCode);
+    const data = JSON.stringify(packet);
+    this.send(data, httpCode, 'json', { headers: extraHeaders || undefined });
   }
 
   send(obj, code = 200) {
@@ -73,7 +86,25 @@ class HttpTransport extends Transport {
   options() {
     const { res } = this;
     if (res.headersSent) return;
-    res.writeHead(204, HEADERS);
+    console.log('OPTIONS HEADERS');
+    const origin = this.req.headers.origin;
+    const allowed = this.server.application?.config?.server?.cors
+      ?.allowedOrigins || ['http://localhost:3000', 'http://127.0.0.1:3000'];
+    const allowedOrigins = new Set(allowed);
+    const corsHeaders = { ...HEADERS };
+    if (origin && allowedOrigins.has(origin)) {
+      corsHeaders['Access-Control-Allow-Origin'] = origin;
+      corsHeaders['Vary'] = 'Origin';
+    }
+    // Security headers on preflight
+    corsHeaders['X-Frame-Options'] = 'DENY';
+    corsHeaders['Content-Security-Policy'] =
+      "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
+    if (this.server.isHttps === true) {
+      corsHeaders['Strict-Transport-Security'] =
+        'max-age=31536000; includeSubdomains; preload';
+    }
+    res.writeHead(204, corsHeaders);
     res.end();
   }
 
@@ -82,7 +113,25 @@ class HttpTransport extends Transport {
     if (res.writableEnded) return;
     const streaming = data instanceof Readable;
     const mimeType = MIME_TYPES[ext] || MIME_TYPES.html;
+    const origin = this.req.headers.origin;
+    const allowed = this.server.application?.config?.server?.cors
+      ?.allowedOrigins || ['http://localhost:3000', 'http://127.0.0.1:3000'];
+    const allowedOrigins = new Set(allowed);
     const headers = { ...HEADERS, 'Content-Type': mimeType };
+    if (origin && allowedOrigins.has(origin)) {
+      headers['Access-Control-Allow-Origin'] = origin;
+      headers['Vary'] = 'Origin';
+    }
+    headers['X-Frame-Options'] = 'DENY';
+    headers['Content-Security-Policy'] =
+      "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
+    if (this.server.isHttps === true) {
+      headers['Strict-Transport-Security'] =
+        'max-age=31536000; includeSubdomains; preload';
+    }
+    if (options?.headers && typeof options.headers === 'object') {
+      Object.assign(headers, options.headers);
+    }
     if (httpCode === 206) {
       const { start, end, size = '*' } = options;
       headers['Content-Range'] = `bytes ${start}-${end}/${size}`;
@@ -101,6 +150,18 @@ class HttpTransport extends Transport {
     return metautil.parseCookies(cookie);
   }
 
+  getOrigin() {
+    return this.req.headers.origin;
+  }
+
+  getReferrer() {
+    return this.req.headers.referer || this.req.headers.referrer;
+  }
+
+  getUserAgent() {
+    return this.req.headers['user-agent'] || '';
+  }
+
   // sendSessionCookie(token) {
   //   const host = metautil.parseHost(this.req.headers.host);
   //   let cookie = `${TOKEN}=${token}; ${COOKIE_HOST}=${host}`;
@@ -108,34 +169,105 @@ class HttpTransport extends Transport {
   //   this.res.setHeader('Set-Cookie', cookie);
   // }
 
-  sendSessionCookie(token, sid) {
+  sendSessionCookie(accessToken, refreshRaw, ACCESS_TTL, REFRESH_TTL) {
     const host = metautil.parseHost(this.req.headers.host);
-    const futureDate = new Date(Date.now() + 1 * 60 * 60 * 1000);
+    const isHttps = this.server.isHttps === true;
+    const secure = true; // Secure cookies only over HTTPS
+    const sameSite = isHttps ? 'None' : 'Lax'; // cross-site only on HTTPS
+    const isLocalhost =
+      host === 'localhost' || host === '127.0.0.1' || host === '::1';
+    const domain = isLocalhost ? undefined : host; // omit Domain for localhost/IP
 
-    // + 7 * 60 * 60 * 1000,
-    console.log({ futureDate });
-    const maxAgeSeconds = 1 * 60 * 60;
-    let cookie = `${sid}=${token}; Max-Age=${maxAgeSeconds}; Expires=${futureDate.toUTCString()}; ${COOKIE_HOST}=${host};`; // Add Secure attribute
-    cookie += '; HttpOnly';
-    console.log({ cookie });
-    this.res.setHeader('Set-Cookie', cookie);
+    // Access token: sent to all endpoints
+    const authCookie = buildCookieHeader({
+      name: 'auth-token',
+      value: accessToken,
+      maxAgeSeconds: ACCESS_TTL,
+      domain,
+      secure,
+      sameSite,
+      path: '/', // Sent to all endpoints
+    });
+    
+    // Refresh token: sent only to refresh endpoint
+    const refreshCookie = buildCookieHeader({
+      name: 'refresh-token',
+      value: refreshRaw,
+      maxAgeSeconds: REFRESH_TTL,
+      domain,
+      secure,
+      sameSite,
+      path: '/api/auth/refresh', // Only sent to refresh endpoint
+    });
+
+    console.log({ authCookie, refreshCookie });
+    this.res.setHeader('Set-Cookie', [authCookie, refreshCookie]);
   }
 
-  removeSessionCookie(TOKEN) {
+  clearSessionCookies() {
     const host = metautil.parseHost(this.req.headers.host);
-    console.log({ REMOVE: host });
-    console.log({ SESSION_ID: this.req.headers.authorization, TOKEN });
+    const isHttps = this.server.isHttps === true;
+    const secure = isHttps;
+    const sameSite = isHttps ? 'None' : 'Lax';
+    const isLocalhost =
+      host === 'localhost' || host === '127.0.0.1' || host === '::1';
+    const domain = isLocalhost ? undefined : host;
+
+    const expired = EPOCH;
+    const base = (name, path = '/') => {
+      let cookie = `${name}=deleted; Max-Age=0; Expires=${expired}; Path=${path};`;
+      if (domain) cookie += ` Domain=${domain};`;
+      cookie += ' HttpOnly;';
+      if (secure) cookie += ' Secure;';
+      if (sameSite) cookie += ` SameSite=${sameSite};`;
+      return cookie;
+    };
+
+    // Clear auth-token from root path
+    const clearAuth = base('auth-token', '/');
+    // Clear refresh-token from both root and refresh paths
+    const clearRefresh = base('refresh-token', '/');
+    const clearRefreshFromRefreshPath = base('refresh-token', '/api/auth/refresh');
+    
+    // Also emit non-Secure variants for browsers that stored them without Secure (dev HTTP)
+    const insecure = (name, path = '/') =>
+      `${name}=deleted; Max-Age=0; Expires=${expired}; Path=${path}; HttpOnly;`;
+    const clearAuthInsecure = insecure('auth-token', '/');
+    const clearRefreshInsecure = insecure('refresh-token', '/');
+    const clearRefreshInsecureFromRefreshPath = insecure('refresh-token', '/api/auth/refresh');
+    
+    this.res.setHeader('Set-Cookie', [
+      clearAuth,
+      clearRefresh,
+      clearRefreshFromRefreshPath,
+      clearAuthInsecure,
+      clearRefreshInsecure,
+      clearRefreshInsecureFromRefreshPath,
+    ]);
+  }
+
+  removeSessionCookie(sessionId) {
+    const host = metautil.parseHost(this.req.headers.host);
+    console.log({ REMOVE: host, sessionId });
     this.res.setHeader(
       'Set-Cookie',
-      `${this.req.headers.authorization}=deleted; Expires=${EPOCH}; ${LOCATION}=` +
-        host,
+      `${sessionId}=deleted; Expires=${EPOCH}; ${LOCATION}=` + host,
     );
   }
 
   redirect(location) {
     const { res } = this;
     if (res.headersSent) return;
-    res.writeHead(302, { Location: location, ...HEADERS });
+    const origin = this.req.headers.origin;
+    const allowed = this.server.application?.config?.server?.cors
+      ?.allowedOrigins || ['http://localhost:3000', 'http://127.0.0.1:3000'];
+    const allowedOrigins = new Set(allowed);
+    const headers = { Location: location, ...HEADERS };
+    if (origin && allowedOrigins.has(origin)) {
+      headers['Access-Control-Allow-Origin'] = origin;
+      headers['Vary'] = 'Origin';
+    }
+    res.writeHead(302, headers);
     res.end();
   }
 }
