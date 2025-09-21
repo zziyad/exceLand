@@ -34,7 +34,7 @@ const EPOCH = 'Thu, 01 Jan 1970 00:00:00 GMT';
 const LOCATION = 'Path=/; Domain';
 // const COOKIE_DELETE = `${TOKEN}=deleted; Expires=${EPOCH}; ${LOCATION}=`;
 // const COOKIE_HOST = `Expires=${FUTURE}; ${LOCATION}`;
-const COOKIE_HOST = 'Expires=Fri, 01 Jan 2100 00:00:00 GMT; Path=/; Domain';
+// const COOKIE_HOST = 'Expires=Fri, 01 Jan 2100 00:00:00 GMT; Path=/; Domain';
 
 class Transport {
   constructor(server, req) {
@@ -138,7 +138,9 @@ class HttpTransport extends Transport {
       headers['Accept-Ranges'] = 'bytes';
       headers['Content-Length'] = end - start + 1;
     }
-    if (!streaming) headers['Content-Length'] = data.length;
+    // if (!streaming) headers['Content-Length'] = data.length;
+    if (!streaming) headers['Content-Length'] = Buffer.byteLength(data);
+
     res.writeHead(httpCode, headers);
     if (streaming) data.pipe(res);
     else res.end(data);
@@ -172,7 +174,7 @@ class HttpTransport extends Transport {
   sendSessionCookie(accessToken, refreshRaw, ACCESS_TTL, REFRESH_TTL) {
     const host = metautil.parseHost(this.req.headers.host);
     const isHttps = this.server.isHttps === true;
-    const secure = true; // Secure cookies only over HTTPS
+    const secure = false; // Secure cookies only over HTTPS
     const sameSite = isHttps ? 'None' : 'Lax'; // cross-site only on HTTPS
     const isLocalhost =
       host === 'localhost' || host === '127.0.0.1' || host === '::1';
@@ -188,7 +190,7 @@ class HttpTransport extends Transport {
       sameSite,
       path: '/', // Sent to all endpoints
     });
-    
+
     // Refresh token: sent only to refresh endpoint
     const refreshCookie = buildCookieHeader({
       name: 'refresh-token',
@@ -227,15 +229,21 @@ class HttpTransport extends Transport {
     const clearAuth = base('auth-token', '/');
     // Clear refresh-token from both root and refresh paths
     const clearRefresh = base('refresh-token', '/');
-    const clearRefreshFromRefreshPath = base('refresh-token', '/api/auth/refresh');
-    
+    const clearRefreshFromRefreshPath = base(
+      'refresh-token',
+      '/api/auth/refresh',
+    );
+
     // Also emit non-Secure variants for browsers that stored them without Secure (dev HTTP)
     const insecure = (name, path = '/') =>
       `${name}=deleted; Max-Age=0; Expires=${expired}; Path=${path}; HttpOnly;`;
     const clearAuthInsecure = insecure('auth-token', '/');
     const clearRefreshInsecure = insecure('refresh-token', '/');
-    const clearRefreshInsecureFromRefreshPath = insecure('refresh-token', '/api/auth/refresh');
-    
+    const clearRefreshInsecureFromRefreshPath = insecure(
+      'refresh-token',
+      '/api/auth/refresh',
+    );
+
     this.res.setHeader('Set-Cookie', [
       clearAuth,
       clearRefresh,

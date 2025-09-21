@@ -2,7 +2,7 @@
 
 /**
  * Test Local Time Functionality
- * 
+ *
  * This script tests the local time functions used in the session system
  */
 
@@ -13,16 +13,22 @@ console.log('🕐 Testing Local Time Functionality\n');
 // Test 1: Current time
 const now = new Date();
 console.log('Current time (UTC):', now.toUTCString());
-console.log('Current time (Local):', now.toLocaleString('en-US', { 
-  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
-}));
+console.log(
+  'Current time (Local):',
+  now.toLocaleString('en-US', {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  }),
+);
 
 // Test 2: Cookie expiration (1 minute from now)
 const oneMinuteFromNow = new Date(now.getTime() + 60 * 1000);
 console.log('\n1 minute from now (UTC):', oneMinuteFromNow.toUTCString());
-console.log('1 minute from now (Local):', oneMinuteFromNow.toLocaleString('en-US', { 
-  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
-}));
+console.log(
+  '1 minute from now (Local):',
+  oneMinuteFromNow.toLocaleString('en-US', {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  }),
+);
 
 // Test 3: Cookie header with local time
 const cookieHeader = buildCookieHeader({
@@ -32,7 +38,7 @@ const cookieHeader = buildCookieHeader({
   domain: 'localhost',
   httpOnly: true,
   secure: false,
-  sameSite: 'Lax'
+  sameSite: 'Lax',
 });
 
 console.log('\n🍪 Cookie Header with Local Time:');
@@ -46,11 +52,17 @@ const accessExpires = new Date(now.getTime() + accessTtl * 1000);
 const refreshExpires = new Date(now.getTime() + refreshTtl * 1000);
 
 console.log('\n⏰ Session Expiration Times:');
-console.log('Access Token expires at (Local):', accessExpires.toLocaleString('en-US', { 
-  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
-}));
-console.log('Refresh Token expires at (Local):', refreshExpires.toLocaleString('en-US', { 
-  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
-}));
+console.log(
+  'Access Token expires at (Local):',
+  accessExpires.toLocaleString('en-US', {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  }),
+);
+console.log(
+  'Refresh Token expires at (Local):',
+  refreshExpires.toLocaleString('en-US', {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  }),
+);
 
 console.log('\n✅ Local time test completed!');

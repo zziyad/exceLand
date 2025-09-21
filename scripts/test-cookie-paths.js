@@ -2,7 +2,7 @@
 
 /**
  * Test Cookie Path Implementation
- * 
+ *
  * This script tests that cookies are set with correct paths
  */
 
@@ -53,13 +53,20 @@ const clearRefreshFromRefreshPath = `refresh-token=deleted; Max-Age=0; Expires=$
 console.log('3. Cookie Clearing:');
 console.log('Clear access token:', clearAccess);
 console.log('Clear refresh token from root:', clearRefresh);
-console.log('Clear refresh token from refresh path:', clearRefreshFromRefreshPath);
+console.log(
+  'Clear refresh token from refresh path:',
+  clearRefreshFromRefreshPath,
+);
 console.log('✅ Both paths cleared to ensure complete logout\n');
 
 console.log('🎯 Expected Behavior:');
 console.log('- Static files (/css, /js, /images): Only auth-token sent');
-console.log('- Normal API calls (/api/auth/me, /api/users, etc.): Only auth-token sent');
-console.log('- Refresh calls (/api/auth/refresh): Both auth-token and refresh-token sent');
+console.log(
+  '- Normal API calls (/api/auth/me, /api/users, etc.): Only auth-token sent',
+);
+console.log(
+  '- Refresh calls (/api/auth/refresh): Both auth-token and refresh-token sent',
+);
 console.log('- Logout: All cookies cleared from all paths');
 
 console.log('\n✅ Cookie path implementation test completed!');

@@ -6,7 +6,29 @@ const logger = require('../lib/logger.js');
 const { promisify } = require('node:util');
 
 class SessionManager {
-  constructor({ accessTtl = 15 * 60, refreshTtl = 7 * 24 * 60 * 60 } = {}) {
+  constructor({ accessTtl, refreshTtl } = {}) {
+    // Get TTL from config if not provided, with fallback to environment variables
+    if (accessTtl === undefined) {
+      try {
+        const config = require('../application/config/sessions.js');
+        accessTtl = config.accessTtl || process.env.ACCESS_TOKEN_TTL || 15 * 60;
+      } catch (e) {
+        accessTtl = process.env.ACCESS_TOKEN_TTL || 15 * 60;
+      }
+    }
+
+    if (refreshTtl === undefined) {
+      try {
+        const config = require('../application/config/sessions.js');
+        refreshTtl =
+          config.refreshTtl ||
+          process.env.REFRESH_TOKEN_TTL ||
+          7 * 24 * 60 * 60;
+      } catch (e) {
+        refreshTtl = process.env.REFRESH_TOKEN_TTL || 7 * 24 * 60 * 60;
+      }
+    }
+
     const {
       REDIS_URL,
       REDIS_HOST = '127.0.0.1',
@@ -37,7 +59,9 @@ class SessionManager {
     this.decrAsync = promisify(this.redis.decr).bind(this.redis);
     this.quitAsync = promisify(this.redis.quit).bind(this.redis);
     this.zaddAsync = promisify(this.redis.zadd).bind(this.redis);
-    this.zremrangebyscoreAsync = promisify(this.redis.zremrangebyscore).bind(this.redis);
+    this.zremrangebyscoreAsync = promisify(this.redis.zremrangebyscore).bind(
+      this.redis,
+    );
     this.zcountAsync = promisify(this.redis.zcount).bind(this.redis);
     this.expireAsync = promisify(this.redis.expire).bind(this.redis);
 
@@ -111,6 +135,7 @@ class SessionManager {
   async createAccessSession(accessToken, data) {
     const sessionKey = `session:${accessToken}`;
     const idxKey = data.id ? `user_sessions:${data.id}` : null;
+
     const payload = {
       ...data,
       createdAt: new Date().toISOString(),
@@ -131,7 +156,9 @@ class SessionManager {
         multi.incr('metrics:activeSessions');
         await this.execMulti(multi);
         // Debug: confirm created (no tokens logged)
-        try { logger.system('createAccessSession ok', { userId: data.id }); } catch {}
+        try {
+          logger.system('createAccessSession ok', { userId: data.id });
+        } catch {}
       } else {
         throw new Error('Redis is not ready');
       }
@@ -268,7 +295,10 @@ class SessionManager {
         while (s.length % 4 !== 0) s += '=';
         return s;
       };
-      const candidates = new Set([String(refreshRaw || ''), toBase64(refreshRaw)]);
+      const candidates = new Set([
+        String(refreshRaw || ''),
+        toBase64(refreshRaw),
+      ]);
       let refreshHash = null;
       let payload = null;
       for (const candidate of candidates) {
@@ -306,12 +336,14 @@ class SessionManager {
           for (const k of keys) multi.del(k);
           multi.del(sKey);
           // decrement metrics counter by number of deleted sessions
-          if (accessTokens.length > 0) multi.decrby('metrics:activeSessions', accessTokens.length);
+          if (accessTokens.length > 0)
+            multi.decrby('metrics:activeSessions', accessTokens.length);
           await this.execMulti(multi);
           // clamp to 0 to avoid negative metrics
           try {
             const cur = Number(await this.getAsync('metrics:activeSessions'));
-            if (Number.isFinite(cur) && cur < 0) await this.setAsync('metrics:activeSessions', '0');
+            if (Number.isFinite(cur) && cur < 0)
+              await this.setAsync('metrics:activeSessions', '0');
           } catch {}
         }
         const refreshHashes = await this.smembersAsync(rKey);
@@ -340,7 +372,9 @@ class SessionManager {
 
   // Build rate limit key
   buildRateKey(scope, dimension, id) {
-    const safe = String(id || '').trim().toLowerCase();
+    const safe = String(id || '')
+      .trim()
+      .toLowerCase();
     return `rl:${scope}:${dimension}:${safe}`;
   }
 
@@ -348,7 +382,8 @@ class SessionManager {
   // Returns { allowed, count, retryAfterSec }
   async checkSlidingLimit(scope, dimension, id, windowSec, limit) {
     try {
-      if (!this.isRedisReady()) return { allowed: true, count: 0, retryAfterSec: 0 };
+      if (!this.isRedisReady())
+        return { allowed: true, count: 0, retryAfterSec: 0 };
       const key = this.buildRateKey(scope, dimension, id);
       const now = Date.now();
       const windowMs = windowSec * 1000;
@@ -364,11 +399,19 @@ class SessionManager {
       const count = Number(replies?.[2]) || 0;
       const allowed = count <= Number(limit || 0);
       // Approximate retry-after if blocked
-      const retryAfterSec = allowed ? 0 : Math.max(1, Math.floor(windowSec / 4));
+      const retryAfterSec = allowed
+        ? 0
+        : Math.max(1, Math.floor(windowSec / 4));
       if (!allowed) {
         try {
           const logger = require('../lib/logger.js');
-          logger.security('rate-limit', { scope, dimension, id, count, windowSec });
+          logger.security('rate-limit', {
+            scope,
+            dimension,
+            id,
+            count,
+            windowSec,
+          });
         } catch {}
       }
       return { allowed, count, retryAfterSec };

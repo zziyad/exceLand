@@ -104,7 +104,9 @@ class Client extends EventEmitter {
       }
 
       // Get session from Redis/memory
-      const sessionData = await this.sessionManager.getAccessSession(accessToken);
+      const sessionData = await this.sessionManager.getAccessSession(
+        accessToken,
+      );
       if (!sessionData) {
         console.log('Session not found or expired');
         return null;
@@ -280,7 +282,12 @@ class Server {
         (Number.isFinite(parsedRefresh) ? parsedRefresh : undefined),
     });
     try {
-      console.log('[sessions] ACCESS_TTL(s)=', this.sessionManager.accessTtl, 'REFRESH_TTL(s)=', this.sessionManager.refreshTtl);
+      console.log(
+        '[sessions] ACCESS_TTL(s)=',
+        this.sessionManager.accessTtl,
+        'REFRESH_TTL(s)=',
+        this.sessionManager.refreshTtl,
+      );
     } catch {}
     this.listen(port);
     this.console.log(`API on port ${port} (${sslOptions ? 'HTTPS' : 'HTTP'})`);
@@ -316,7 +323,7 @@ class Server {
   listen(port) {
     this.httpServer.on('request', async (req, res) => {
       const transport = new HttpTransport(this, req, res);
-      
+
       // Handle dedicated refresh endpoint
       if (req.url === '/api/auth/refresh' && req.method === 'POST') {
         const client = new Client(transport);
@@ -326,7 +333,7 @@ class Server {
           type: 'call',
           id: 'refresh',
           method: 'auth/refresh',
-          args: {}
+          args: {},
         };
         this.rpc(client, JSON.stringify(refreshPacket));
         req.on('close', () => {
@@ -336,7 +343,7 @@ class Server {
         });
         return;
       }
-      
+
       if (!req.url.startsWith('/api'))
         return void this.application.static.serve(req.url, transport);
 
@@ -476,9 +483,32 @@ class Server {
           return;
         }
 
+        // Check specific permissions for permission-based endpoints
+        const requiredAccess = proc().access;
+        if (requiredAccess !== 'private' && requiredAccess !== 'public') {
+          // This is a permission-based endpoint (e.g., 'event.create', 'event.read')
+          const userPermissions = sessionData.permissions || [];
+
+          if (!userPermissions.includes(requiredAccess)) {
+            client.error(403, {
+              id,
+              error: {
+                message: `Permission required: ${requiredAccess}`,
+                code: 'PERMISSION_DENIED',
+                requiredPermission: requiredAccess,
+                userPermissions: userPermissions,
+                userRoles: sessionData.roles?.map((r) => r.name) || [],
+              },
+            });
+            return;
+          }
+        }
+
         // Set session in client
         client.session = new Session(accessToken, sessionData);
-        this.console.log(`Auth OK ${client.ip}\tuser=${sessionData.id}`);
+        this.console.log(
+          `Auth OK ${client.ip}\tuser=${sessionData.id}\taccess=${requiredAccess}`,
+        );
       } catch (error) {
         console.error('Auth check error:', error);
         client.error(500, { id, error: { message: 'Authentication error' } });
@@ -498,6 +528,7 @@ class Server {
           client.error(code, { id, error: result, httpCode, headers });
           return;
         }
+        console.log({ '---------------result--------': result });
         client.send({ type: 'callback', id, result });
       })
       .catch((error) => {

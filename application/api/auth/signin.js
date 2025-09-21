@@ -4,10 +4,20 @@
     // Rate limit: per IP and per account (email)
     try {
       const ip = context.client.ip;
-      const acct = String(email || '').toLowerCase().trim();
-      const ipRes = await context.client.checkSlidingLimit('signin', 'ip', ip, 60, 10);
+      const acct = String(email || '')
+        .toLowerCase()
+        .trim();
+      const ipRes = await context.client.checkSlidingLimit(
+        'signin',
+        'ip',
+        ip,
+        60,
+        10,
+      );
       if (!ipRes.allowed) {
-        try { console.security('login-rate-limited', { ip, acct }); } catch {}
+        try {
+          console.security('login-rate-limited', { ip, acct });
+        } catch {}
         const err = new Error('Too many requests');
         err.code = 'RATE_LIMITED';
         err.httpCode = 429;
@@ -15,9 +25,17 @@
         return err;
       }
       if (acct) {
-        const acctRes = await context.client.checkSlidingLimit('signin', 'acct', acct, 60, 5);
+        const acctRes = await context.client.checkSlidingLimit(
+          'signin',
+          'acct',
+          acct,
+          60,
+          5,
+        );
         if (!acctRes.allowed) {
-          try { console.security('login-rate-limited', { ip, acct }); } catch {}
+          try {
+            console.security('login-rate-limited', { ip, acct });
+          } catch {}
           const err = new Error('Too many requests');
           err.code = 'RATE_LIMITED';
           err.httpCode = 429;
@@ -40,16 +58,29 @@
       // Get user by email
       const user = await lib.provider.getUser(email);
       if (!user) {
-        try { console.security('login-failed', { email, ip: context.client.ip }); } catch {}
-        return { status: 'rejected', response: 'Invalid email or password' };
+        try {
+          console.security('login-failed', { email, ip: context.client.ip });
+        } catch {}
+        return {
+          status: 'rejected',
+          response: 'Invalid email or password',
+          code: 'INVALID_CREDENTIALS',
+        };
       }
 
       // Check if user is active
       if (!user.is_active) {
-        try { console.security('login-failed', { email, ip: context.client.ip, reason: 'inactive' }); } catch {}
+        try {
+          console.security('login-failed', {
+            email,
+            ip: context.client.ip,
+            reason: 'inactive',
+          });
+        } catch {}
         return {
           status: 'rejected',
           response: 'Account is deactivated. Please contact administrator.',
+          code: 'INACTIVE_ACCOUNT',
         };
       }
 
@@ -59,10 +90,13 @@
         user.password_hash,
       );
       if (!ok) {
-        try { console.security('login-failed', { email, ip: context.client.ip }); } catch {}
+        try {
+          console.security('login-failed', { email, ip: context.client.ip });
+        } catch {}
         return {
           status: 'rejected',
           response: 'Invalid email or password',
+          code: 'INVALID_CREDENTIALS',
         };
       }
 
@@ -113,14 +147,26 @@
         { createdBy: 'login' },
       );
       if (!started) {
-        try { console.security('login-failed', { email, ip: context.client.ip, reason: 'session-start' }); } catch {}
+        try {
+          console.security('login-failed', {
+            email,
+            ip: context.client.ip,
+            reason: 'session-start',
+          });
+        } catch {}
         return {
           status: 'rejected',
           response: 'Failed to create session',
         };
       }
 
-      try { console.security('login-success', { email, userId: user.id, ip: context.client.ip }); } catch {}
+      try {
+        console.security('login-success', {
+          email,
+          userId: user.id,
+          ip: context.client.ip,
+        });
+      } catch {}
 
       return {
         status: 'logged',

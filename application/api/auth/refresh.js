@@ -5,10 +5,22 @@
       // Rate limit: per IP and per user (after refreshData)
       try {
         const ip = context.client.ip;
-        const ipRes = await context.client.checkSlidingLimit('refresh', 'ip', ip, 300, 30);
+        const ipRes = await context.client.checkSlidingLimit(
+          'refresh',
+          'ip',
+          ip,
+          300,
+          30,
+        );
         if (!ipRes.allowed) {
-          try { console.security('refresh-rate-limited', { ip }); } catch {}
-          return { status: 'rejected', response: 'Too many requests' };
+          try {
+            console.security('refresh-rate-limited', { ip });
+          } catch {}
+          return {
+            status: 'rejected',
+            response: 'Too many requests',
+            code: 'RATE_LIMITED',
+          };
         }
       } catch {}
       // Get refresh token from cookies
@@ -36,10 +48,22 @@
       // Now we can rate limit by userId too
       try {
         const userId = refreshInfo.userId;
-        const uRes = await context.client.checkSlidingLimit('refresh', 'user', String(userId), 300, 15);
+        const uRes = await context.client.checkSlidingLimit(
+          'refresh',
+          'user',
+          String(userId),
+          300,
+          15,
+        );
         if (!uRes.allowed) {
-          try { console.security('refresh-rate-limited', { userId }); } catch {}
-          return { status: 'rejected', response: 'Too many requests' };
+          try {
+            console.security('refresh-rate-limited', { userId });
+          } catch {}
+          return {
+            status: 'rejected',
+            response: 'Too many requests',
+            code: 'RATE_LIMITED',
+          };
         }
       } catch {}
       // Do not log refresh meta in production
@@ -53,19 +77,47 @@
       const { normalizeIp } = common;
       const currentIp = normalizeIp(context.client.ip);
       if (meta.uaHash && meta.uaHash !== currentUaHash) {
-        try { await context.sessionManager.invalidateAllUserSessions(userId); } catch {}
-        try { context.client.clearSessionCookies(); } catch {}
-        try { console.security('refresh-reuse-detected', { userId, reason: 'uaHash' }); } catch {}
-        return { status: 'rejected', response: 'Refresh reuse detected' };
+        try {
+          await context.sessionManager.invalidateAllUserSessions(userId);
+        } catch {}
+        try {
+          context.client.clearSessionCookies();
+        } catch {}
+        try {
+          console.security('refresh-reuse-detected', {
+            userId,
+            reason: 'uaHash',
+          });
+        } catch {}
+        return {
+          status: 'rejected',
+          response: 'Refresh reuse detected',
+          code: 'REFRESH_REUSE',
+        };
       }
       // allow subnet match to reduce false positives behind NAT
       const { sameSubnet } = common;
       const maskBits = Number(context.config?.security?.ipSubnetMaskBits || 24);
       if (meta.ip && !sameSubnet(meta.ip, currentIp, maskBits)) {
-        try { await context.sessionManager.invalidateAllUserSessions(userId); } catch {}
-        try { context.client.clearSessionCookies(); } catch {}
-        try { console.security('refresh-reuse-detected', { userId, reason: 'ipMismatch', metaIp: meta.ip, currentIp }); } catch {}
-        return { status: 'rejected', response: 'Refresh reuse detected' };
+        try {
+          await context.sessionManager.invalidateAllUserSessions(userId);
+        } catch {}
+        try {
+          context.client.clearSessionCookies();
+        } catch {}
+        try {
+          console.security('refresh-reuse-detected', {
+            userId,
+            reason: 'ipMismatch',
+            metaIp: meta.ip,
+            currentIp,
+          });
+        } catch {}
+        return {
+          status: 'rejected',
+          response: 'Refresh reuse detected',
+          code: 'REFRESH_REUSE',
+        };
       }
 
       // Get user data
@@ -84,7 +136,9 @@
       // Revoke old access if present to reduce attack window
       const oldAccess = cookies['auth-token'];
       if (oldAccess) {
-        try { await context.client.invalidateAccessSession(oldAccess); } catch {}
+        try {
+          await context.client.invalidateAccessSession(oldAccess);
+        } catch {}
       }
 
       // Generate new tokens
@@ -129,7 +183,12 @@
       // Invalidate old refresh token (rotation)
       await context.client.invalidateRefreshByRaw(refreshRaw);
 
-      try { console.security('refresh-success', { userId: user.id, ip: context.client.ip }); } catch {}
+      try {
+        console.security('refresh-success', {
+          userId: user.id,
+          ip: context.client.ip,
+        });
+      } catch {}
 
       return {
         status: 'refreshed',
